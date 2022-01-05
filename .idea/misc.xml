@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="record-view/src/main/res/drawable/recv_bg_mic.xml" value="0.25925925925925924" />
+        <entry key="record-view/src/main/res/drawable/recv_ic_arrow.xml" value="0.25925925925925924" />
+        <entry key="record-view/src/main/res/drawable/recv_ic_delete.xml" value="0.25925925925925924" />
+        <entry key="record-view/src/main/res/drawable/recv_ic_mic.xml" value="0.25925925925925924" />
+        <entry key="record-view/src/main/res/drawable/recv_ic_mic_white.xml" value="0.25925925925925924" />
+        <entry key="record-view/src/main/res/layout/record_view_layout.xml" value="0.26614583333333336" />
+      </map>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="11" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
+</project>

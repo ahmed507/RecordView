@@ -7,10 +7,8 @@
     android:layout_height="wrap_content"
     android:clipChildren="false"
     android:clipToPadding="false"
-    android:paddingBottom="15dp"
-    android:paddingTop="15dp"
+    android:paddingVertical="@dimen/_12sdp"
     android:visibility="visible">
-
 
     <io.supercharge.shimmerlayout.ShimmerLayout
         android:id="@+id/shimmer_layout"
@@ -21,44 +19,43 @@
         app:shimmer_color="#ffffff"
         app:shimmer_reverse_animation="true">
 
-
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center">
 
-            <ImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/arrow"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"/>
 
             <TextView
                 android:id="@+id/slide_to_cancel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="#444" />
-
+                android:textColor="#444"
+                android:textSize="@dimen/_9sdp" />
 
         </LinearLayout>
+
     </io.supercharge.shimmerlayout.ShimmerLayout>
 
-    <ImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/glowing_mic"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_centerInParent="true"
-        android:layout_marginLeft="8dp"
+        android:layout_marginStart="@dimen/_8sdp"
         app:srcCompat="@drawable/recv_ic_mic" />
 
-    <ImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/basket_img"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_centerInParent="true"
-        android:layout_marginLeft="8dp"
-
+        android:layout_marginStart="@dimen/_8sdp"
         android:visibility="invisible" />
 
     <Chronometer
@@ -66,12 +63,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:layout_marginLeft="8dp"
+        android:layout_marginStart="@dimen/_8sdp"
         android:layout_toRightOf="@id/glowing_mic"
         android:gravity="center"
         android:text="00:00"
+        android:textSize="@dimen/_9sdp"
         android:textStyle="bold" />
-
 
 </RelativeLayout>
 

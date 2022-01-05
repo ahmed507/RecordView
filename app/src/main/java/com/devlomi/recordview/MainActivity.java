@@ -1,6 +1,9 @@
 package com.devlomi.recordview;
 
+import static androidx.core.content.PermissionChecker.PERMISSION_GRANTED;
+
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -24,8 +27,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
-
-import static androidx.core.content.PermissionChecker.PERMISSION_GRANTED;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -98,9 +99,6 @@ public class MainActivity extends AppCompatActivity {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                Log.d("RecordView", "onStart");
-                Toast.makeText(MainActivity.this, "OnStartRecord", Toast.LENGTH_SHORT).show();
-
             }
 
             @Override
@@ -114,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFinish(long recordTime, boolean limitReached) {
+            public void onFinish(long recordTime, boolean limitReached, String file) {
                 stopRecording(false);
 
 
@@ -175,6 +173,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    @SuppressLint("DefaultLocale")
     private String getHumanTimeText(long milliseconds) {
         return String.format("%02d:%02d",
                 TimeUnit.MILLISECONDS.toMinutes(milliseconds),

@@ -1,12 +1,14 @@
 package com.devlomi.record_view;
 
 /**
- * Created by Devlomi on 24/08/2017.
+ * Edit by Yehia Reda on 05/01/2022.
  */
-
 public interface OnRecordListener {
     void onStart();
+
     void onCancel();
-    void onFinish(long recordTime,boolean limitReached);
+
+    void onFinish(long recordTime, boolean limitReached, String file);
+
     void onLessThanSecond();
 }

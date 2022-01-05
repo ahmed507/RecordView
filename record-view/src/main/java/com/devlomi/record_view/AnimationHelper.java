@@ -20,10 +20,14 @@ import androidx.vectordrawable.graphics.drawable.AnimatorInflaterCompat;
 import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
 
+/**
+ * Edit by Yehia Reda on 05/01/2022.
+ */
 public class AnimationHelper {
-    private Context context;
-    private AnimatedVectorDrawableCompat animatedVectorDrawable;
-    private ImageView basketImg, smallBlinkingMic;
+    private final Context context;
+    private final AnimatedVectorDrawableCompat animatedVectorDrawable;
+    private final ImageView basketImg;
+    private final ImageView smallBlinkingMic;
     private AlphaAnimation alphaAnimation;
     private OnBasketAnimationEnd onBasketAnimationEndListener;
     private boolean isBasketAnimating, isStartRecorded = false;

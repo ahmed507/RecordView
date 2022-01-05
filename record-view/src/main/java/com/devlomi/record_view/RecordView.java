@@ -4,7 +4,11 @@ import android.content.Context;
 import android.content.res.AssetFileDescriptor;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
+import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
+import android.media.MediaRecorder;
+import android.net.Uri;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.util.AttributeSet;
@@ -20,13 +24,13 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import java.io.IOException;
+import java.util.UUID;
 
 import io.supercharge.shimmerlayout.ShimmerLayout;
 
 /**
- * Created by Devlomi on 24/08/2017.
+ * Edit by Yehia Reda on 05/01/2022.
  */
-
 public class RecordView extends RelativeLayout {
 
     public static final int DEFAULT_CANCEL_BOUNDS = 8; //8dp
@@ -38,7 +42,7 @@ public class RecordView extends RelativeLayout {
     private float initialX, basketInitialY, difX = 0;
     private float cancelBounds = DEFAULT_CANCEL_BOUNDS;
     private long startTime, elapsedTime = 0;
-    private Context context;
+    private final Context context;
     private OnRecordListener recordListener;
     private RecordPermissionHandler recordPermissionHandler;
     private boolean isSwiped, isLessThanSecondAllowed = false;
@@ -54,8 +58,11 @@ public class RecordView extends RelativeLayout {
     private Runnable runnable;
     private Handler handler;
     private RecordButton recordButton;
+    private MediaRecorder mediaRecorder;
 
     private boolean canRecord = true;
+    private String recordPath = "";
+    public String type = "3gp";
 
     public RecordView(Context context) {
         super(context);
@@ -91,14 +98,11 @@ public class RecordView extends RelativeLayout {
         basketImg = view.findViewById(R.id.basket_img);
         slideToCancelLayout = view.findViewById(R.id.shimmer_layout);
 
-
         hideViews(true);
-
 
         if (attrs != null && defStyleAttr == -1 && defStyleRes == -1) {
             TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.RecordView,
                     defStyleAttr, defStyleRes);
-
 
             int slideArrowResource = typedArray.getResourceId(R.styleable.RecordView_slide_to_cancel_arrow, -1);
             String slideToCancelText = typedArray.getString(R.styleable.RecordView_slide_to_cancel_text);
@@ -111,7 +115,6 @@ public class RecordView extends RelativeLayout {
 
             if (cancelBounds != -1)
                 setCancelBounds(cancelBounds, false);//don't convert it to pixels since it's already in pixels
-
 
             if (slideArrowResource != -1) {
                 Drawable slideArrow = AppCompatResources.getDrawable(getContext(), slideArrowResource);
@@ -149,26 +152,21 @@ public class RecordView extends RelativeLayout {
         runnable = new Runnable() {
             @Override
             public void run() {
-
                 if (recordListener != null && !isSwiped)
-                    recordListener.onFinish(elapsedTime, true);
+                    recordListener.onFinish(elapsedTime, true, recordPath);
 
                 removeTimeLimitCallbacks();
 
                 animationHelper.setStartRecorded(false);
 
-
                 if (!isSwiped)
                     playSound(RECORD_FINISHED);
-
 
                 if (recordButton != null) {
                     resetRecord(recordButton);
                 }
                 isSwiped = true;
-
             }
-
         };
     }
 
@@ -225,15 +223,16 @@ public class RecordView extends RelativeLayout {
 
 
     protected void onActionDown(RecordButton recordBtn, MotionEvent motionEvent) {
-
         if (!isRecordPermissionGranted()) {
             return;
         }
 
         this.recordButton = recordBtn;
 
-        if (recordListener != null)
+        if (recordListener != null) {
+            startRecord();
             recordListener.onStart();
+        }
 
         if (isTimeLimitValid()) {
             removeTimeLimitCallbacks();
@@ -243,7 +242,6 @@ public class RecordView extends RelativeLayout {
         animationHelper.setStartRecorded(true);
         animationHelper.resetBasketAnimation();
         animationHelper.resetSmallMic();
-
 
         if (isRecordButtonGrowingAnimationEnabled) {
             recordBtn.startScale();
@@ -266,12 +264,45 @@ public class RecordView extends RelativeLayout {
         startTime = System.currentTimeMillis();
         counterTime.start();
         isSwiped = false;
-
     }
 
+    private void startRecord() {
+        mediaRecorder = new MediaRecorder();
+
+        recordPath =
+                context.getExternalFilesDir(Environment.DIRECTORY_MUSIC).getAbsolutePath() + "/" + UUID.randomUUID().toString() + "." + type;
+        mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+        mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+        mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+        mediaRecorder.setAudioSamplingRate(16000);
+
+        try {
+            mediaRecorder.setOutputFile(recordPath);
+        } catch (Exception e) {
+        }
+        try {
+            mediaRecorder.prepare();
+        } catch (IOException e) {
+        }
+        mediaRecorder.start();
+    }
+
+    private void stopRecording() {
+        mediaRecorder.stop();
+        mediaRecorder.reset();
+        mediaRecorder.release();
+    }
+
+    private long getRecordDuration() {
+        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+        Uri uri = Uri.parse(recordPath);
+        retriever.setDataSource(context, uri);
+
+        String time = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+        return Long.parseLong(time);
+    }
 
     protected void onActionMove(RecordButton recordBtn, MotionEvent motionEvent) {
-
         if (!canRecord) {
             return;
         }
@@ -288,9 +319,7 @@ public class RecordView extends RelativeLayout {
                     hideViews(true);
                     animationHelper.clearAlphaAnimation(false);
 
-
                     animationHelper.onAnimationEnd();
-
                 } else {
                     hideViews(false);
                     animationHelper.animateBasket(basketInitialY);
@@ -304,53 +333,39 @@ public class RecordView extends RelativeLayout {
                 }
 
                 isSwiped = true;
-
-
                 animationHelper.setStartRecorded(false);
 
-                if (recordListener != null)
+                if (recordListener != null) {
+                    stopRecording();
                     recordListener.onCancel();
+                }
 
                 if (isTimeLimitValid()) {
                     removeTimeLimitCallbacks();
                 }
-
-
             } else {
-
-
                 //if statement is to Prevent Swiping out of bounds
                 if (motionEvent.getRawX() < initialX) {
                     recordBtn.animate()
                             .x(motionEvent.getRawX())
                             .setDuration(0)
                             .start();
-
-
                     if (difX == 0)
                         difX = (initialX - slideToCancelLayout.getX());
-
 
                     slideToCancelLayout.animate()
                             .x(motionEvent.getRawX() - difX)
                             .setDuration(0)
                             .start();
-
-
                 }
-
-
             }
-
         }
     }
 
     protected void onActionUp(RecordButton recordBtn) {
-
         if (!canRecord) {
             return;
         }
-
         elapsedTime = System.currentTimeMillis() - startTime;
 
         if (!isLessThanSecondAllowed && isLessThanOneSecond(elapsedTime) && !isSwiped) {
@@ -361,25 +376,19 @@ public class RecordView extends RelativeLayout {
             animationHelper.setStartRecorded(false);
 
             playSound(RECORD_ERROR);
-
-
         } else {
             if (recordListener != null && !isSwiped)
-                recordListener.onFinish(elapsedTime, false);
+                recordListener.onFinish(elapsedTime, false, recordPath);
 
             removeTimeLimitCallbacks();
 
             animationHelper.setStartRecorded(false);
 
-
             if (!isSwiped)
                 playSound(RECORD_FINISHED);
-
         }
 
         resetRecord(recordBtn);
-
-
     }
 
     private void resetRecord(RecordButton recordBtn) {
@@ -405,7 +414,6 @@ public class RecordView extends RelativeLayout {
 
 
     private boolean isRecordPermissionGranted() {
-
         if (recordPermissionHandler == null) {
             canRecord = true;
         }
@@ -424,7 +432,6 @@ public class RecordView extends RelativeLayout {
 
         slideToCancelLayout.setLayoutParams(layoutParams);
     }
-
 
     public void setOnRecordListener(OnRecordListener recrodListener) {
         this.recordListener = recrodListener;
@@ -465,7 +472,6 @@ public class RecordView extends RelativeLayout {
     public void setSlideMarginRight(int marginRight) {
         setMarginRight(marginRight, true);
     }
-
 
     public void setCustomSounds(int startSound, int finishedSound, int errorSound) {
         //0 means do not play sound
@@ -530,8 +536,6 @@ public class RecordView extends RelativeLayout {
     public void setTrashIconColor(int color) {
         animationHelper.setTrashIconColor(color);
     }
-
-
 }
 
 

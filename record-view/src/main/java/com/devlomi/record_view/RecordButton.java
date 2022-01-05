@@ -1,5 +1,6 @@
 package com.devlomi.record_view;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
@@ -12,16 +13,14 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.AppCompatImageView;
 
 /**
- * Created by Devlomi on 13/12/2017.
+ * Edit by Yehia Reda on 05/01/2022.
  */
-
 public class RecordButton extends AppCompatImageView implements View.OnTouchListener, View.OnClickListener {
 
     private ScaleAnim scaleAnim;
     private RecordView recordView;
     private boolean listenForRecord = true;
     private OnRecordClickListener onRecordClickListener;
-
 
     public void setRecordView(RecordView recordView) {
         this.recordView = recordView;
@@ -40,16 +39,13 @@ public class RecordButton extends AppCompatImageView implements View.OnTouchList
     public RecordButton(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init(context, attrs);
-
-
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private void init(Context context, AttributeSet attrs) {
         if (attrs != null) {
             TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.RecordButton);
-
             int imageResource = typedArray.getResourceId(R.styleable.RecordButton_mic_icon, -1);
-
 
             if (imageResource != -1) {
                 setTheImageResource(imageResource);
@@ -57,15 +53,9 @@ public class RecordButton extends AppCompatImageView implements View.OnTouchList
 
             typedArray.recycle();
         }
-
-
         scaleAnim = new ScaleAnim(this);
-
-
         this.setOnTouchListener(this);
         this.setOnClickListener(this);
-
-
     }
 
     @Override
@@ -89,22 +79,18 @@ public class RecordButton extends AppCompatImageView implements View.OnTouchList
         }
     }
 
-
     private void setTheImageResource(int imageResource) {
         Drawable image = AppCompatResources.getDrawable(getContext(), imageResource);
         setImageDrawable(image);
     }
 
-
     @Override
     public boolean onTouch(View v, MotionEvent event) {
         if (isListenForRecord()) {
             switch (event.getAction()) {
-
                 case MotionEvent.ACTION_DOWN:
                     recordView.onActionDown((RecordButton) v, event);
                     break;
-
 
                 case MotionEvent.ACTION_MOVE:
                     recordView.onActionMove((RecordButton) v, event);
@@ -113,15 +99,10 @@ public class RecordButton extends AppCompatImageView implements View.OnTouchList
                 case MotionEvent.ACTION_UP:
                     recordView.onActionUp((RecordButton) v);
                     break;
-
             }
-
         }
         return isListenForRecord();
-
-
     }
-
 
     protected void startScale() {
         scaleAnim.start();
@@ -142,7 +123,6 @@ public class RecordButton extends AppCompatImageView implements View.OnTouchList
     public void setOnRecordClickListener(OnRecordClickListener onRecordClickListener) {
         this.onRecordClickListener = onRecordClickListener;
     }
-
 
     @Override
     public void onClick(View v) {
