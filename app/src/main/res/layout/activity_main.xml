@@ -5,7 +5,7 @@
     android:id="@+id/parent_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.devlomi.recordview.MainActivity">
+    tools:context="com.yehia.recordview.MainActivity">
 
     <Button
         android:id="@+id/btn_change_onclick"
@@ -15,7 +15,7 @@
         android:text="Change onClick" />
 
 
-    <com.devlomi.record_view.RecordView
+    <com.yehia.record_view.RecordView
         android:id="@+id/record_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -29,7 +29,7 @@
         app:counter_time_color="#ff0000"
         />
 
-    <com.devlomi.record_view.RecordButton
+    <com.yehia.record_view.RecordButton
         android:id="@+id/record_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

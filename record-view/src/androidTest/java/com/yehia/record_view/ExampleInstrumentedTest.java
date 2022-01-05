@@ -1,4 +1,4 @@
-package com.devlomi.recordview;
+package com.yehia.record_view;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("com.devlomi.recordview", appContext.getPackageName());
+        assertEquals("com.devlomi.record_view.test", appContext.getPackageName());
     }
 }

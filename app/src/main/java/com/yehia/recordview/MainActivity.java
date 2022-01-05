@@ -1,4 +1,4 @@
-package com.devlomi.recordview;
+package com.yehia.recordview;
 
 import static androidx.core.content.PermissionChecker.PERMISSION_GRANTED;
 
@@ -16,12 +16,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import com.devlomi.record_view.OnBasketAnimationEnd;
-import com.devlomi.record_view.OnRecordClickListener;
-import com.devlomi.record_view.OnRecordListener;
-import com.devlomi.record_view.RecordButton;
-import com.devlomi.record_view.RecordPermissionHandler;
-import com.devlomi.record_view.RecordView;
+import com.yehia.record_view.OnBasketAnimationEnd;
+import com.yehia.record_view.OnRecordClickListener;
+import com.yehia.record_view.OnRecordListener;
+import com.yehia.record_view.RecordButton;
+import com.yehia.record_view.RecordPermissionHandler;
+import com.yehia.record_view.RecordView;
 
 import java.io.File;
 import java.io.IOException;

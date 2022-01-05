@@ -1,4 +1,4 @@
-package com.devlomi.record_view;
+package com.yehia.record_view;
 
 import org.junit.Test;
 

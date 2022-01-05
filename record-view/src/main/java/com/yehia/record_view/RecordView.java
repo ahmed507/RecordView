@@ -1,4 +1,4 @@
-package com.devlomi.record_view;
+package com.yehia.record_view;
 
 import android.content.Context;
 import android.content.res.AssetFileDescriptor;

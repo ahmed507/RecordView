@@ -1,4 +1,3 @@
-[![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-RecordView-orange.svg?style=flat)](https://android-arsenal.com/details/1/6259)
  [ ![Download](https://api.bintray.com/packages/devlomi/maven/RecordView/images/download.svg) ](https://bintray.com/devlomi/maven/RecordView/_latestVersion)
 
 # RecordView
@@ -30,15 +29,8 @@ Add this to your module build.gradle
 
 ```gradle
 dependencies {
-    //for AppCompat use:
-    //appcompat v26+ is higly recommended to support older APIs
-    implementation 'com.devlomi.record-view:record-view:2.0.1'
-  
-
     //for AndroidX use:
-    implementation 'com.github.3llomi:RecordView:3.0.2'
-
-
+    implementation 'com.github.yehiareda4:RecordView:1.0.0'
 }
 ```
 
@@ -57,7 +49,7 @@ dependencies {
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.devlomi.record_view.RecordView
+    <com.yehia.record_view.RecordView
         android:id="@+id/record_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -68,10 +60,9 @@ dependencies {
         app:slide_to_cancel_bounds="8dp"
         app:slide_to_cancel_margin_right="10dp"
         app:slide_to_cancel_text="Slide To Cancel"
-        app:counter_time_color="#ff0000"
-        />
+        app:counter_time_color="#ff0000" />
 
-    <com.devlomi.record_view.RecordButton
+    <com.yehia.record_view.RecordButton
         android:id="@+id/record_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -80,8 +71,7 @@ dependencies {
         android:background="@drawable/recv_bg_mic"
         android:scaleType="centerInside"
         app:mic_icon="@drawable/recv_ic_mic_white" />
-
-
+  
 </RelativeLayout>
 
 

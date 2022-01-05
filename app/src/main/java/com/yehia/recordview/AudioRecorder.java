@@ -1,4 +1,4 @@
-package com.devlomi.recordview;
+package com.yehia.recordview;
 
 import android.media.MediaRecorder;
 
