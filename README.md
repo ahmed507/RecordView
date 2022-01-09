@@ -30,7 +30,7 @@ Add this to your module build.gradle
 ```gradle
 dependencies {
     //for AndroidX use:
-    implementation 'com.github.yehiareda4:RecordView:1.0.0'
+    implementation 'com.github.yehiareda4:RecordView:1.0.3'
 }
 ```
 
