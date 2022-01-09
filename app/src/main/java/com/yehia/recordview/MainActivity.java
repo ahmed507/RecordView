@@ -139,28 +139,28 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        recordView.setRecordPermissionHandler(new RecordPermissionHandler() {
-            @Override
-            public boolean isPermissionGranted() {
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-                    return true;
-                }
-
-                boolean recordPermissionAvailable = ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.RECORD_AUDIO) == PERMISSION_GRANTED;
-                if (recordPermissionAvailable) {
-                    return true;
-                }
-
-
-                ActivityCompat.
-                        requestPermissions(MainActivity.this,
-                                new String[]{Manifest.permission.RECORD_AUDIO},
-                                0);
-
-                return false;
-
-            }
-        });
+//        recordView.setRecordPermissionHandler(new RecordPermissionHandler() {
+//            @Override
+//            public boolean isPermissionGranted() {
+//                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+//                    return true;
+//                }
+//
+//                boolean recordPermissionAvailable = ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.RECORD_AUDIO) == PERMISSION_GRANTED;
+//                if (recordPermissionAvailable) {
+//                    return true;
+//                }
+//
+//
+//                ActivityCompat.
+//                        requestPermissions(MainActivity.this,
+//                                new String[]{Manifest.permission.RECORD_AUDIO},
+//                                0);
+//
+//                return false;
+//
+//            }
+//        });
 
 
     }

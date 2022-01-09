@@ -1,5 +1,7 @@
 package com.yehia.record_view;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.AssetFileDescriptor;
 import android.content.res.TypedArray;
@@ -22,6 +24,7 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.app.ActivityCompat;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -223,6 +226,17 @@ public class RecordView extends RelativeLayout {
 
 
     protected void onActionDown(RecordButton recordBtn, MotionEvent motionEvent) {
+
+        boolean audio = EX.checkPermission(Manifest.permission.RECORD_AUDIO, getContext());
+        boolean readStorage =
+                EX.checkPermission(Manifest.permission.READ_EXTERNAL_STORAGE, getContext());
+        boolean writeStorage =
+                EX.checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, getContext());
+        if (!audio || !readStorage || !writeStorage) {
+            onPermission(getContext());
+            return;
+        }
+
         if (!isRecordPermissionGranted()) {
             return;
         }
@@ -264,6 +278,17 @@ public class RecordView extends RelativeLayout {
         startTime = System.currentTimeMillis();
         counterTime.start();
         isSwiped = false;
+    }
+
+
+    public void onPermission(Context activity) {
+        String[] perms = {Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.RECORD_AUDIO,
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE};
+        ActivityCompat.requestPermissions(
+                (Activity) getContext(), perms, 100
+        );
     }
 
     private void startRecord() {
@@ -363,6 +388,14 @@ public class RecordView extends RelativeLayout {
     }
 
     protected void onActionUp(RecordButton recordBtn) {
+        boolean audio = EX.checkPermission(Manifest.permission.RECORD_AUDIO, getContext());
+        boolean readStorage =
+                EX.checkPermission(Manifest.permission.READ_EXTERNAL_STORAGE, getContext());
+        boolean writeStorage =
+                EX.checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, getContext());
+        if (!audio || !readStorage || !writeStorage) {
+            return;
+        }
         if (!canRecord) {
             return;
         }
