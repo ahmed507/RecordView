@@ -1,11 +1,7 @@
 package com.yehia.recordview;
 
-import static androidx.core.content.PermissionChecker.PERMISSION_GRANTED;
-
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -13,14 +9,11 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
 import com.yehia.record_view.OnBasketAnimationEnd;
 import com.yehia.record_view.OnRecordClickListener;
 import com.yehia.record_view.OnRecordListener;
 import com.yehia.record_view.RecordButton;
-import com.yehia.record_view.RecordPermissionHandler;
 import com.yehia.record_view.RecordView;
 
 import java.io.File;
@@ -90,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
         recordView.setCustomSounds(R.raw.record_start, R.raw.record_finished, 0);
 
 
-        recordView.setOnRecordListener(new OnRecordListener() {
+        recordView.setOnRecordListener(this, new OnRecordListener() {
             @Override
             public void onStart() {
                 recordFile = new File(getFilesDir(), UUID.randomUUID().toString() + ".3gp");

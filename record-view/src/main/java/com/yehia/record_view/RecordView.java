@@ -66,6 +66,7 @@ public class RecordView extends RelativeLayout {
     private boolean canRecord = true;
     private String recordPath = "";
     public String type = "3gp";
+    private Activity activity;
 
     public RecordView(Context context) {
         super(context);
@@ -233,7 +234,7 @@ public class RecordView extends RelativeLayout {
         boolean writeStorage =
                 EX.checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, getContext());
         if (!audio || !readStorage || !writeStorage) {
-            onPermission(getContext());
+            onPermission();
             return;
         }
 
@@ -281,13 +282,13 @@ public class RecordView extends RelativeLayout {
     }
 
 
-    public void onPermission(Context activity) {
+    public void onPermission() {
         String[] perms = {Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.RECORD_AUDIO,
                 Manifest.permission.READ_EXTERNAL_STORAGE,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE};
         ActivityCompat.requestPermissions(
-                (Activity) getContext(), perms, 100
+                activity, perms, 100
         );
     }
 
@@ -466,7 +467,8 @@ public class RecordView extends RelativeLayout {
         slideToCancelLayout.setLayoutParams(layoutParams);
     }
 
-    public void setOnRecordListener(OnRecordListener recrodListener) {
+    public void setOnRecordListener(Activity activity, OnRecordListener recrodListener) {
+        this.activity= activity;
         this.recordListener = recrodListener;
     }
 
