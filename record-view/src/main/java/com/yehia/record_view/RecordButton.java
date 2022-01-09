@@ -4,10 +4,13 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.AppCompatImageView;
@@ -21,6 +24,7 @@ public class RecordButton extends AppCompatImageView implements View.OnTouchList
     private RecordView recordView;
     private boolean listenForRecord = true;
     private OnRecordClickListener onRecordClickListener;
+    private int imageResource;
 
     public void setRecordView(RecordView recordView) {
         this.recordView = recordView;
@@ -45,7 +49,7 @@ public class RecordButton extends AppCompatImageView implements View.OnTouchList
     private void init(Context context, AttributeSet attrs) {
         if (attrs != null) {
             TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.RecordButton);
-            int imageResource = typedArray.getResourceId(R.styleable.RecordButton_mic_icon, -1);
+            imageResource = typedArray.getResourceId(R.styleable.RecordButton_mic_icon, -1);
 
             if (imageResource != -1) {
                 setTheImageResource(imageResource);
@@ -77,6 +81,32 @@ public class RecordButton extends AppCompatImageView implements View.OnTouchList
         if (v.getParent() instanceof View) {
             setClip((View) v.getParent());
         }
+    }
+
+    public void setWithEditText(EditText etMessage, final int drawable) {
+        etMessage.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (count > 0) {
+                    setTheImageResource(drawable);
+//                    type = SEND_
+                } else {
+                    if (imageResource != -1) {
+                        setTheImageResource(imageResource);
+                    }
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
     }
 
     private void setTheImageResource(int imageResource) {
