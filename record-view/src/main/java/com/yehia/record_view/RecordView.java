@@ -1,5 +1,7 @@
 package com.yehia.record_view;
 
+import static androidx.core.content.PermissionChecker.PERMISSION_GRANTED;
+
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
@@ -10,6 +12,7 @@ import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.SystemClock;
@@ -25,6 +28,7 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -283,8 +287,7 @@ public class RecordView extends RelativeLayout {
 
 
     public void onPermission() {
-        String[] perms = {Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.RECORD_AUDIO,
+        String[] perms = {Manifest.permission.RECORD_AUDIO,
                 Manifest.permission.READ_EXTERNAL_STORAGE,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE};
         ActivityCompat.requestPermissions(
@@ -450,9 +453,9 @@ public class RecordView extends RelativeLayout {
     private boolean isRecordPermissionGranted() {
         if (recordPermissionHandler == null) {
             canRecord = true;
+        } else {
+            canRecord = recordPermissionHandler.isPermissionGranted();
         }
-
-        canRecord = recordPermissionHandler.isPermissionGranted();
 
         return canRecord;
     }
@@ -467,8 +470,30 @@ public class RecordView extends RelativeLayout {
         slideToCancelLayout.setLayoutParams(layoutParams);
     }
 
-    public void setOnRecordListener(Activity activity, OnRecordListener recrodListener) {
-        this.activity= activity;
+    public void setOnRecordListener(final Activity activity, OnRecordListener recrodListener) {
+        this.activity = activity;
+                setRecordPermissionHandler(new RecordPermissionHandler() {
+            @Override
+            public boolean isPermissionGranted() {
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+                    return true;
+                }
+
+                boolean recordPermissionAvailable = ContextCompat.checkSelfPermission(activity, Manifest.permission.RECORD_AUDIO) == PERMISSION_GRANTED;
+                if (recordPermissionAvailable) {
+                    return true;
+                }
+
+
+                ActivityCompat.
+                        requestPermissions(activity,
+                                new String[]{Manifest.permission.RECORD_AUDIO},
+                                0);
+
+                return false;
+
+            }
+        });
         this.recordListener = recrodListener;
     }
 

@@ -20,10 +20,12 @@ public class AudioRecorder {
         if (mediaRecorder == null) {
             initMediaRecorder();
         }
-
-        mediaRecorder.setOutputFile(filePath);
-        mediaRecorder.prepare();
-        mediaRecorder.start();
+        try {
+            mediaRecorder.setOutputFile(filePath);
+            mediaRecorder.prepare();
+            mediaRecorder.start();
+        } catch (Exception e) {
+        }
     }
 
     void stop() {
