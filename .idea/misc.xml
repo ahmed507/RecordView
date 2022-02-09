@@ -10,6 +10,7 @@
         <entry key="record-view/src/main/res/drawable/recv_ic_mic_white.xml" value="0.25925925925925924" />
         <entry key="record-view/src/main/res/layout/chat_view_layout.xml" value="0.21388888888888888" />
         <entry key="record-view/src/main/res/layout/record_view_layout.xml" value="0.26614583333333336" />
+        <entry key="record-view/src/main/res/xml/file_paths.xml" value="0.25555555555555554" />
       </map>
     </option>
   </component>

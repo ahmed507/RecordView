@@ -298,12 +298,15 @@ public class RecordView extends RelativeLayout {
     private void startRecord() {
         mediaRecorder = new MediaRecorder();
 
-        recordPath =
-                context.getExternalFilesDir(Environment.DIRECTORY_MUSIC).getAbsolutePath() + "/" + UUID.randomUUID().toString() + "." + type;
+        recordPath = Environment.getExternalStoragePublicDirectory(
+                        Environment.DIRECTORY_PICTURES).getAbsolutePath() + "/" + UUID.randomUUID().toString() + "." + type;
         mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
         mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
         mediaRecorder.setAudioSamplingRate(16000);
+
+        Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES);
 
         try {
             mediaRecorder.setOutputFile(recordPath);
