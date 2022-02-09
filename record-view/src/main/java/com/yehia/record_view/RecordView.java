@@ -478,20 +478,15 @@ public class RecordView extends RelativeLayout {
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
                     return true;
                 }
-
                 boolean recordPermissionAvailable = ContextCompat.checkSelfPermission(activity, Manifest.permission.RECORD_AUDIO) == PERMISSION_GRANTED;
                 if (recordPermissionAvailable) {
                     return true;
                 }
 
-
-                ActivityCompat.
-                        requestPermissions(activity,
+                ActivityCompat.requestPermissions(activity,
                                 new String[]{Manifest.permission.RECORD_AUDIO},
                                 0);
-
                 return false;
-
             }
         });
         this.recordListener = recrodListener;
