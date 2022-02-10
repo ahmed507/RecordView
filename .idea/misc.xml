@@ -3,6 +3,8 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="../../../../layout/custom_preview.xml" value="0.1625" />
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.25925925925925924" />
         <entry key="record-view/src/main/res/drawable/recv_bg_mic.xml" value="0.25925925925925924" />
         <entry key="record-view/src/main/res/drawable/recv_ic_arrow.xml" value="0.25925925925925924" />
         <entry key="record-view/src/main/res/drawable/recv_ic_delete.xml" value="0.25925925925925924" />

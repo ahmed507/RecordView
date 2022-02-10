@@ -3,19 +3,22 @@ package com.yehia.record_view;
 import static androidx.core.content.PermissionChecker.PERMISSION_GRANTED;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.AssetFileDescriptor;
 import android.content.res.TypedArray;
+import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Environment;
 import android.os.Handler;
+import android.os.ParcelFileDescriptor;
 import android.os.SystemClock;
+import android.provider.MediaStore;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -30,6 +33,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
 
@@ -40,6 +44,10 @@ import io.supercharge.shimmerlayout.ShimmerLayout;
  */
 public class RecordView extends RelativeLayout {
 
+
+    private Uri audiouri = null;
+    String fileName = null;
+    private ParcelFileDescriptor file = null;
     public static final int DEFAULT_CANCEL_BOUNDS = 8; //8dp
     private ImageView smallBlinkingMic, basketImg;
     private Chronometer counterTime;
@@ -69,8 +77,11 @@ public class RecordView extends RelativeLayout {
 
     private boolean canRecord = true;
     private String recordPath = "";
-    public String type = "3gp";
+    public String type = "mp4";
     private Activity activity;
+
+    private AudioRecorder audioRecorder;
+    private File recordFile;
 
     public RecordView(Context context) {
         super(context);
@@ -95,6 +106,7 @@ public class RecordView extends RelativeLayout {
         View view = View.inflate(context, R.layout.record_view_layout, null);
         addView(view);
 
+        audioRecorder = new AudioRecorder();
 
         ViewGroup viewGroup = (ViewGroup) view.getParent();
         viewGroup.setClipChildren(false);
@@ -160,8 +172,11 @@ public class RecordView extends RelativeLayout {
         runnable = new Runnable() {
             @Override
             public void run() {
-                if (recordListener != null && !isSwiped)
-                    recordListener.onFinish(elapsedTime, true, recordPath);
+                if (recordListener != null && !isSwiped) {
+                    stopRecording(false);
+
+                    recordListener.onFinish(elapsedTime, false, recordFile.getPath());
+                }
 
                 removeTimeLimitCallbacks();
 
@@ -296,33 +311,64 @@ public class RecordView extends RelativeLayout {
     }
 
     private void startRecord() {
+
+       /* if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            ContentValues values = new ContentValues(4);
+            values.put(MediaStore.Audio.Media.TITLE, fileName);
+            values.put(
+                    MediaStore.Audio.Media.DATE_ADDED,
+                    (System.currentTimeMillis() / 1000)
+            );
+            values.put(MediaStore.Audio.Media.MIME_TYPE, "audio/" + type);
+            values.put(MediaStore.Audio.Media.RELATIVE_PATH, "Music/Recordings/");
+
+            audiouri = context.getContentResolver().insert(
+                    MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                    values
+            );
+            try {
+                file = context.getContentResolver().openFileDescriptor(audiouri, "w");
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        } else {
+            recordPath =
+                    context.getExternalFilesDir(Environment.DIRECTORY_MUSIC).getAbsolutePath()
+                            + "/${UUID.randomUUID()}.$type";
+        }
+
         mediaRecorder = new MediaRecorder();
 
-        recordPath = Environment.getExternalStoragePublicDirectory(
-                        Environment.DIRECTORY_PICTURES).getAbsolutePath() + "/" + UUID.randomUUID().toString() + "." + type;
         mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
         mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
         mediaRecorder.setAudioSamplingRate(16000);
 
-        Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES);
-
-        try {
-            mediaRecorder.setOutputFile(recordPath);
-        } catch (Exception e) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+            mediaRecorder.setOutputFile(file.getFileDescriptor());
+        else {
+            try {
+                mediaRecorder.setOutputFile(recordPath);
+            } catch (Exception e) {
+            }
         }
+        mediaRecorder.setAudioChannels(1);
         try {
             mediaRecorder.prepare();
         } catch (IOException e) {
         }
-        mediaRecorder.start();
+        mediaRecorder.start();*/
+
+        recordFile = new File(context.getFilesDir(), UUID.randomUUID().toString() + "." + type);
+        try {
+            audioRecorder.start(recordFile.getPath());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void stopRecording() {
-        mediaRecorder.stop();
-        mediaRecorder.reset();
-        mediaRecorder.release();
+        stopRecording(true);
     }
 
     private long getRecordDuration() {
@@ -409,16 +455,46 @@ public class RecordView extends RelativeLayout {
         elapsedTime = System.currentTimeMillis() - startTime;
 
         if (!isLessThanSecondAllowed && isLessThanOneSecond(elapsedTime) && !isSwiped) {
-            if (recordListener != null)
+            if (recordListener != null) {
+                stopRecording(true);
                 recordListener.onLessThanSecond();
+            }
 
             removeTimeLimitCallbacks();
             animationHelper.setStartRecorded(false);
 
             playSound(RECORD_ERROR);
         } else {
-            if (recordListener != null && !isSwiped)
-                recordListener.onFinish(elapsedTime, false, recordPath);
+            if (recordListener != null && !isSwiped) {
+                stopRecording(false);
+
+                recordListener.onFinish(elapsedTime, false, recordFile.getPath());
+            }
+
+            /* try {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        mediaPlayer.setAudioAttributes(new AudioAttributes.Builder()
+                                .setUsage(AudioAttributes.USAGE_MEDIA)
+                                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                                .setLegacyStreamType(AudioManager.STREAM_MUSIC)
+                                .build());
+                    } else {
+                        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                    }
+
+                    mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                        @Override
+                        public void onPrepared(MediaPlayer mp) {
+                            mediaPlayer.start();
+                        }
+                    });
+                    mediaPlayer.setDataSource(file);
+//                    mediaPlayer.prepare();
+
+                    mediaPlayer.prepareAsync();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }*/
 
             removeTimeLimitCallbacks();
 
@@ -429,6 +505,23 @@ public class RecordView extends RelativeLayout {
         }
 
         resetRecord(recordBtn);
+    }
+
+    @SuppressLint("Recycle")
+    private String getRealPathFromUri(Context context, Uri contentUri) {
+        Cursor cursor = null;
+        try {
+            String[] projd = {MediaStore.Images.Media.DATA};
+            cursor = context.getContentResolver().query(contentUri, projd, null, null, null);
+            int columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            cursor.moveToFirst();
+            return cursor.getString(columnIndex);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+            return "";
+        }
     }
 
     private void resetRecord(RecordButton recordBtn) {
@@ -475,7 +568,7 @@ public class RecordView extends RelativeLayout {
 
     public void setOnRecordListener(final Activity activity, OnRecordListener recrodListener) {
         this.activity = activity;
-                setRecordPermissionHandler(new RecordPermissionHandler() {
+        setRecordPermissionHandler(new RecordPermissionHandler() {
             @Override
             public boolean isPermissionGranted() {
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
@@ -487,8 +580,8 @@ public class RecordView extends RelativeLayout {
                 }
 
                 ActivityCompat.requestPermissions(activity,
-                                new String[]{Manifest.permission.RECORD_AUDIO},
-                                0);
+                        new String[]{Manifest.permission.RECORD_AUDIO},
+                        0);
                 return false;
             }
         });
@@ -593,6 +686,13 @@ public class RecordView extends RelativeLayout {
 
     public void setTrashIconColor(int color) {
         animationHelper.setTrashIconColor(color);
+    }
+
+    private void stopRecording(boolean deleteFile) {
+        audioRecorder.stop();
+        if (recordFile != null && deleteFile) {
+            recordFile.delete();
+        }
     }
 }
 

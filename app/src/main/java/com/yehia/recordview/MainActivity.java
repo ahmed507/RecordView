@@ -2,6 +2,10 @@ package com.yehia.recordview;
 
 import android.annotation.SuppressLint;
 import android.graphics.Color;
+import android.media.AudioAttributes;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -25,17 +29,18 @@ public class MainActivity extends AppCompatActivity {
 
     private AudioRecorder audioRecorder;
     private File recordFile;
+    MediaPlayer mediaPlayer = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        mediaPlayer = new MediaPlayer();
         audioRecorder = new AudioRecorder();
 
-        RecordView recordView = (RecordView) findViewById(R.id.record_view);
-        final RecordButton recordButton = (RecordButton) findViewById(R.id.record_button);
-        Button btnChangeOnclick = (Button) findViewById(R.id.btn_change_onclick);
+        RecordView recordView = findViewById(R.id.record_view);
+        final RecordButton recordButton = findViewById(R.id.record_button);
+        Button btnChangeOnclick = findViewById(R.id.btn_change_onclick);
 
         //IMPORTANT
         recordButton.setRecordView(recordView);
@@ -89,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
                 recordFile = new File(getFilesDir(), UUID.randomUUID().toString() + ".3gp");
                 try {
                     audioRecorder.start(recordFile.getPath());
+
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -113,6 +119,31 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, "onFinishRecord - Recorded Time is: " + time + " File saved at " + recordFile.getPath(), Toast.LENGTH_SHORT).show();
                 Log.d("RecordView", "onFinish" + " Limit Reached? " + limitReached);
                 Log.d("RecordTime", time);
+
+               /* try {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        mediaPlayer.setAudioAttributes(new AudioAttributes.Builder()
+                                .setUsage(AudioAttributes.USAGE_MEDIA)
+                                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                                .setLegacyStreamType(AudioManager.STREAM_MUSIC)
+                                .build());
+                    } else {
+                        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                    }
+
+                    mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                        @Override
+                        public void onPrepared(MediaPlayer mp) {
+                            mediaPlayer.start();
+                        }
+                    });
+                    mediaPlayer.setDataSource(file);
+//                    mediaPlayer.prepare();
+
+                    mediaPlayer.prepareAsync();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }*/
             }
 
             @Override
