@@ -2,10 +2,7 @@ package com.yehia.recordview;
 
 import android.annotation.SuppressLint;
 import android.graphics.Color;
-import android.media.AudioAttributes;
-import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -113,7 +110,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onFinish(long recordTime, boolean limitReached, String file) {
                 stopRecording(false);
-
 
                 String time = getHumanTimeText(recordTime);
                 Toast.makeText(MainActivity.this, "onFinishRecord - Recorded Time is: " + time + " File saved at " + recordFile.getPath(), Toast.LENGTH_SHORT).show();
