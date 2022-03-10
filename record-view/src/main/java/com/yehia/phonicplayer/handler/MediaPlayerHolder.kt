@@ -1,5 +1,6 @@
 package com.yehia.phonicplayer.handler
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.media.AudioManager
 import android.media.MediaPlayer
@@ -7,7 +8,6 @@ import android.util.Log
 import com.yehia.phonicplayer.listener.OnPlaybackInfoListener
 import com.yehia.phonicplayer.utils.PlayerAdapter
 import com.yehia.phonicplayer.utils.PlayerTarget
-import com.yehia.phonicplayer.handler.MediaActionHandler
 import java.io.File
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
@@ -217,7 +217,9 @@ class MediaPlayerHolder(context: Context) : PlayerAdapter, MediaActionHandler {
 
     companion object {
         const val PLAYBACK_POSITION_REFRESH_INTERVAL_MS = 1000
+        @SuppressLint("StaticFieldLeak")
         private var mInstance: MediaPlayerHolder? = null
+
         @Synchronized
         fun getInstance(context: Context): MediaPlayerHolder? {
             if (mInstance == null) {

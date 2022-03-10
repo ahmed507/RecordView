@@ -23,6 +23,7 @@ class CustomProgressBar(context: Context, attrs: AttributeSet) : View(context, a
     private var progress = 0f
     private var min = 0
     private var max = 100
+
     /**
      * Start the progress at 12 o'clock
      */

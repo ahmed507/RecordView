@@ -27,6 +27,7 @@ class PlayerTarget(builder: Builder) {
         var fileUri: Uri? = null
         var resource = 0
         var remoteUrl: String? = null
+
         @Type
         var targetType = 0
 

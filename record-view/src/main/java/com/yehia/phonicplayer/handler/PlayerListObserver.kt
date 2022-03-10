@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
-import com.yehia.phonicplayer.handler.MediaActionHandler
 
 /*
  * Created by Elesh Baraiya on 19 December 2019
@@ -34,6 +33,7 @@ class PlayerListObserver : LifecycleObserver {
 
     companion object {
         private var mInstance: PlayerListObserver? = null
+
         @JvmStatic
         @get:Synchronized
         val instance: PlayerListObserver?
