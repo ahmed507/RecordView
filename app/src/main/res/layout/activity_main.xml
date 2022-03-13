@@ -38,5 +38,11 @@
         android:scaleType="centerInside"
         app:mic_icon="@drawable/recv_ic_mic_white" />
 
+    <com.yehia.phonicplayer.views.PhonicPlayerView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:duration_start="false"
+        app:duration_end="false"
+        app:custom_layout="@layout/view_audio_player_2" />
 
 </RelativeLayout>

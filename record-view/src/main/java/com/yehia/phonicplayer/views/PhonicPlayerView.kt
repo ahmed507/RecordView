@@ -102,14 +102,6 @@ class PhonicPlayerView : RelativeLayout {
             R.styleable.PhonicPlayerViewAtt_duration_end,
             true
         )
-        if (!ta.getString(
-                R.styleable.PhonicPlayerViewAtt_duration
-            ).isNullOrEmpty()
-        ) {
-            duration = ta.getString(
-                R.styleable.PhonicPlayerViewAtt_duration
-            )!!
-        }
     }
 
     fun setAudioTarget(uri: Uri?) {
