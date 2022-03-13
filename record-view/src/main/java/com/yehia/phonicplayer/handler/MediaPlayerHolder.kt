@@ -13,10 +13,10 @@ import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
 
-/*
- * Created by Elesh Baraiya on 19 December 2019
- * Copyright © 2019 Phonic Audio Player. All rights reserved.
+/**
+ * Edit by Yehia Reda on 05/03/2022.
  */
+
 class MediaPlayerHolder(context: Context) : PlayerAdapter, MediaActionHandler {
     private val mContext: Context = context.applicationContext
     private var mMediaPlayer: MediaPlayer? = null
@@ -217,6 +217,7 @@ class MediaPlayerHolder(context: Context) : PlayerAdapter, MediaActionHandler {
 
     companion object {
         const val PLAYBACK_POSITION_REFRESH_INTERVAL_MS = 1000
+
         @SuppressLint("StaticFieldLeak")
         private var mInstance: MediaPlayerHolder? = null
 

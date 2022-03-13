@@ -2,10 +2,10 @@ package com.yehia.phonicplayer.utils
 
 import com.yehia.phonicplayer.listener.OnPlaybackInfoListener
 
-/*
- * Created by Elesh Baraiya on 19 December 2019
- * Copyright © 2019 Phonic Audio Player. All rights reserved.
+/**
+ * Edit by Yehia Reda on 05/03/2022.
  */
+
 interface PlayerAdapter {
     fun loadMedia(resourceId: PlayerTarget?)
     fun release()

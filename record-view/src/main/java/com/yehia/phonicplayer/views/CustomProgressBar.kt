@@ -11,10 +11,10 @@ import android.view.View
 import android.view.animation.DecelerateInterpolator
 import com.yehia.record_view.R
 
-/*
- * Created by Elesh Baraiya on 19 December 2019
- * Copyright © 2019 Phonic Audio Player. All rights reserved.
+/**
+ * Edit by Yehia Reda on 05/03/2022.
  */
+
 class CustomProgressBar(context: Context, attrs: AttributeSet) : View(context, attrs) {
     /**
      * ProgressBar's line thickness

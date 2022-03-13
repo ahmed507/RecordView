@@ -32,11 +32,13 @@ import com.yehia.record_view.R
 import java.io.File
 import java.util.concurrent.TimeUnit
 
-/*
- * Created by Elesh Baraiya on 19 December 2019
- * Copyright © 2019 Phonic Audio Player. All rights reserved.
+/**
+ * Edit by Yehia Reda on 05/03/2022.
  */
+
 class PhonicPlayerView : RelativeLayout {
+
+    private var centerDuration: TextView? = null
     private var playerRootView: View? = null
     private var mSeekBar: SeekBar? = null
     private var mCircleProgressBar: CustomProgressBar? = null
@@ -53,6 +55,10 @@ class PhonicPlayerView : RelativeLayout {
     private var mStringURL = ""
     private var mStringDirectory = ""
     private val playerViewClickListenersArray = SparseArray<OnPlayerViewClickListener>()
+
+    private var durationStart: Boolean = true
+    private var durationEnd: Boolean = true
+    private var duration: String = "0"
 
     constructor(context: Context?) : super(context) {
         init(context)
@@ -87,6 +93,23 @@ class PhonicPlayerView : RelativeLayout {
             R.styleable.PhonicPlayerViewAtt_custom_layout,
             R.layout.view_audio_player_1
         )
+
+        durationStart = ta.getBoolean(
+            R.styleable.PhonicPlayerViewAtt_duration_start,
+            true
+        )
+        durationEnd = ta.getBoolean(
+            R.styleable.PhonicPlayerViewAtt_duration_end,
+            true
+        )
+        if (!ta.getString(
+                R.styleable.PhonicPlayerViewAtt_duration
+            ).isNullOrEmpty()
+        ) {
+            duration = ta.getString(
+                R.styleable.PhonicPlayerViewAtt_duration
+            )!!
+        }
     }
 
     fun setAudioTarget(uri: Uri?) {
@@ -154,8 +177,21 @@ class PhonicPlayerView : RelativeLayout {
         mPauseButton = findViewById(R.id.button_pause)
         mChronometer = findViewById(R.id.current_duration)
         mDuration = findViewById(R.id.total_duration)
+        centerDuration = findViewById(R.id.center_duration)
         mStringDirectory = mContext!!.getString(R.string.app_name)
         initializePlaybackController()
+
+        if (!durationStart) {
+            mChronometer!!.visibility = GONE
+            centerDuration!!.visibility = GONE
+        }
+
+        if (!durationEnd) {
+            mDuration!!.visibility = GONE
+            centerDuration!!.visibility = GONE
+        }
+
+
         mPauseButton?.setOnClickListener {
             if (mPlayerAdapter != null) {
                 mPlayerAdapter!!.pause()

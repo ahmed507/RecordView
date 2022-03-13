@@ -5,10 +5,10 @@ import android.os.SystemClock
 import android.util.AttributeSet
 import android.widget.Chronometer
 
-/*
- * Created by Elesh Baraiya on 19 December 2019
- * Copyright © 2019 Phonic Audio Player. All rights reserved.
+/**
+ * Edit by Yehia Reda on 05/03/2022.
  */
+
 class CustomChronometer : Chronometer {
     private var timeWhenStopped: Long = 0
 

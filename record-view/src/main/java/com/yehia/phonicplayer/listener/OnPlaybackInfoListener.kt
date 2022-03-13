@@ -1,8 +1,13 @@
 package com.yehia.phonicplayer.listener
 
 /**
+ * Edit by Yehia Reda on 05/03/2022.
+ */
+
+/**
  * Allows [MediaPlayerHolder] to report media playback duration and progress updates to
  */
+
 abstract class OnPlaybackInfoListener {
     annotation class State {
         companion object {

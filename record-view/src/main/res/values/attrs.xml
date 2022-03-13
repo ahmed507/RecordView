@@ -27,7 +27,10 @@
     </declare-styleable>
 
     <declare-styleable name="PhonicPlayerViewAtt">
-        <attr name="custom_layout" format="reference"/>
-        <attr name="is_in_list" format="boolean"/>
+        <attr name="custom_layout" format="reference" />
+        <attr name="is_in_list" format="boolean" />
+        <attr name="duration_start" format="boolean" />
+        <attr name="duration_end" format="boolean" />
+        <attr name="duration" format="string" />
     </declare-styleable>
 </resources>
