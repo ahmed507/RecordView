@@ -5,7 +5,8 @@
     android:layout_height="wrap_content"
     android:gravity="center_vertical"
     android:orientation="horizontal"
-    android:padding="@dimen/_4sdp">
+    android:paddingHorizontal="@dimen/_2sdp"
+    android:paddingVertical="@dimen/_4sdp">
 
     <RelativeLayout
         android:id="@+id/v_audio_rl"
@@ -16,8 +17,8 @@
 
         <com.yehia.phonicplayer.views.CustomProgressBar
             android:id="@+id/progressBar"
-            android:layout_width="@dimen/_60sdp"
-            android:layout_height="@dimen/_60sdp"
+            android:layout_width="@dimen/_38sdp"
+            android:layout_height="@dimen/_38sdp"
             android:layout_centerInParent="true"
             android:visibility="gone"
             app:defaultColor="@color/audioDefaultColor"
@@ -36,8 +37,8 @@
 
         <ImageView
             android:id="@+id/button_pause"
-            android:layout_width="@dimen/_22sdp"
-            android:layout_height="@dimen/_22sdp"
+            android:layout_width="@dimen/_16sdp"
+            android:layout_height="@dimen/_16sdp"
             android:layout_centerInParent="true"
             android:background="@android:color/transparent"
             android:contentDescription="@string/app_name"
@@ -46,8 +47,8 @@
 
         <ImageView
             android:id="@+id/button_play"
-            android:layout_width="@dimen/_22sdp"
-            android:layout_height="@dimen/_22sdp"
+            android:layout_width="@dimen/_16sdp"
+            android:layout_height="@dimen/_16sdp"
             android:layout_centerInParent="true"
             android:background="@android:color/transparent"
             android:contentDescription="@string/app_name"
@@ -58,7 +59,7 @@
     <SeekBar
         android:id="@+id/seekbar_audio"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/_4sdp"
         android:layout_centerVertical="true"
         android:layout_toStartOf="@+id/v_audio_ll"
         android:layout_toEndOf="@+id/v_audio_rl"
@@ -79,19 +80,22 @@
         <com.yehia.phonicplayer.views.CustomChronometer
             android:id="@+id/current_duration"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/_8sdp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="2dp"
-            android:text="/" />
+            android:padding="@dimen/_1sdp"
+            android:text="/"
+            android:textSize="@dimen/_8sdp" />
 
         <TextView
             android:id="@+id/total_duration"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="00:00" />
+            android:text="@string/_00_00"
+            android:textSize="@dimen/_8sdp" />
 
     </LinearLayout>
 
