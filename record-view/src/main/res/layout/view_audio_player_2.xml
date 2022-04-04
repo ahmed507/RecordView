@@ -17,8 +17,8 @@
 
         <com.yehia.phonicplayer.views.CustomProgressBar
             android:id="@+id/progressBar"
-            android:layout_width="@dimen/_38sdp"
-            android:layout_height="@dimen/_38sdp"
+            android:layout_width="@dimen/_20sdp"
+            android:layout_height="@dimen/_20sdp"
             android:layout_centerInParent="true"
             android:visibility="gone"
             app:defaultColor="@color/audioDefaultColor"
@@ -44,6 +44,16 @@
             android:contentDescription="@string/app_name"
             android:src="@drawable/icon_recording_stop"
             android:visibility="gone" />
+
+        <ImageView
+            android:id="@+id/button_error"
+            android:layout_width="@dimen/_16sdp"
+            android:layout_height="@dimen/_16sdp"
+            android:layout_centerInParent="true"
+            android:visibility="gone"
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/app_name"
+            android:src="@drawable/ic_baseline_error_outline_24" />
 
         <ImageView
             android:id="@+id/button_play"

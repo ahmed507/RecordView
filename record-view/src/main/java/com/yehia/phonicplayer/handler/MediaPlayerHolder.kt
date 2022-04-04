@@ -81,6 +81,7 @@ class MediaPlayerHolder(context: Context) : PlayerAdapter, MediaActionHandler {
         }
         try {
             logToUI("load() {2. prepare}")
+
             mMediaPlayer!!.prepare()
         } catch (e: Exception) {
             logToUI(e.toString())

@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.yehia.phonicplayer.views.PhonicPlayerView;
 import com.yehia.record_view.OnBasketAnimationEnd;
 import com.yehia.record_view.OnRecordClickListener;
 import com.yehia.record_view.OnRecordListener;
@@ -37,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
 
         RecordView recordView = findViewById(R.id.record_view);
         final RecordButton recordButton = findViewById(R.id.record_button);
+        final PhonicPlayerView phonicPlayerView = findViewById(R.id.record_plays);
         Button btnChangeOnclick = findViewById(R.id.btn_change_onclick);
 
         //IMPORTANT
@@ -84,17 +86,12 @@ public class MainActivity extends AppCompatActivity {
 
         recordView.setCustomSounds(R.raw.record_start, R.raw.record_finished, 0);
 
-
+        phonicPlayerView.setAudioTarget("https://mhbook.aait-sa.com/admin/client", MainActivity.this);
         recordView.setOnRecordListener(this, new OnRecordListener() {
             @Override
             public void onStart() {
                 recordFile = new File(getFilesDir(), UUID.randomUUID().toString() + ".3gp");
-                try {
-                    audioRecorder.start(recordFile.getPath());
 
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
             }
 
             @Override

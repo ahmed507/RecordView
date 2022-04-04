@@ -30,6 +30,8 @@ import com.yehia.phonicplayer.utils.PlayerTarget
 import com.yehia.phonicplayer.utils.PlayerUtils
 import com.yehia.record_view.R
 import java.io.File
+import java.net.HttpURLConnection
+import java.net.URL
 import java.util.concurrent.TimeUnit
 
 /**
@@ -38,12 +40,14 @@ import java.util.concurrent.TimeUnit
 
 class PhonicPlayerView : RelativeLayout {
 
+    private var activity: Activity? = null
     private var centerDuration: TextView? = null
     private var playerRootView: View? = null
     private var mSeekBar: SeekBar? = null
     private var mCircleProgressBar: CustomProgressBar? = null
     private var mCircleProgressBarDownload: CustomProgressBar? = null
     private var mPlayButton: ImageView? = null
+    private var mErrorButton: ImageView? = null
     private var mPauseButton: ImageView? = null
     private var mChronometer: CustomChronometer? = null
     private var mDuration: TextView? = null
@@ -104,20 +108,24 @@ class PhonicPlayerView : RelativeLayout {
         )
     }
 
-    fun setAudioTarget(uri: Uri?) {
+    fun setAudioTarget(uri: Uri?, activity: Activity) {
+        this.activity = activity
         mTarget = PlayerTarget.Builder().withLocalFile(uri).build()
     }
 
-    fun setAudioTarget(resource: Int) {
+    fun setAudioTarget(resource: Int, activity: Activity) {
+        this.activity = activity
         mTarget = PlayerTarget.Builder().withResource(resource).build()
     }
 
-    fun setAudioTarget(url: String) {
+    fun setAudioTarget(url: String, activity: Activity) {
+        this.activity = activity
         if (!url.isEmpty()) mTarget =
             PlayerTarget.Builder().withRemoteUrl(url).build()
     }
 
-    fun setAudioTarget(url: String, name: String) {
+    fun setAudioTarget(url: String, name: String, activity: Activity) {
+        this.activity = activity
         mStringName = name
         mStringURL = url
         if (isFileExist("$folderDirectory/$mStringName")) {
@@ -138,7 +146,6 @@ class PhonicPlayerView : RelativeLayout {
         viewId: Int,
         onPlayerViewClickListener: OnPlayerViewClickListener
     ) {
-        Log.i(TAG, "view registered")
         playerViewClickListenersArray.append(viewId, onPlayerViewClickListener)
     }
 
@@ -153,7 +160,7 @@ class PhonicPlayerView : RelativeLayout {
     /**
      * We only load the media file whe the play button is clicked the first time
      */
-    fun init(context: Context?) {
+    private fun init(context: Context?) {
 
         val config = PRDownloaderConfig.newBuilder()
             .setDatabaseEnabled(true)
@@ -166,6 +173,7 @@ class PhonicPlayerView : RelativeLayout {
         mCircleProgressBar = findViewById(R.id.progressBar)
         mCircleProgressBarDownload = findViewById(R.id.progressBar_download)
         mPlayButton = findViewById(R.id.button_play)
+        mErrorButton = findViewById(R.id.button_error)
         mPauseButton = findViewById(R.id.button_pause)
         mChronometer = findViewById(R.id.current_duration)
         mDuration = findViewById(R.id.total_duration)
@@ -196,11 +204,39 @@ class PhonicPlayerView : RelativeLayout {
                 if (mStringName.isNotEmpty() && !isFileExist("$folderDirectory/$mStringName")) {
                     downloadFile(mStringURL, mStringName)
                 } else {
+
                     if (mTarget != null) {
                         if (!mPlayerAdapter!!.hasTarget(mTarget)) {
+                            val urlFile = when (mTarget!!.targetType) {
+                                PlayerTarget.Type.RESOURCE -> {
+                                    (mTarget!!.resource).toString()
+                                }
+                                PlayerTarget.Type.REMOTE_FILE_URL -> {
+                                    (mTarget!!.remoteUrl).toString()
+                                }
+                                PlayerTarget.Type.LOCAL_FILE_URI -> {
+                                    Log.e("MEDIAPLAY_HOLDER_TAG", "Type is LOCAL_FILE_URI")
+                                    val audioFile = File(mTarget!!.fileUri.toString())
+                                    if (audioFile.exists()) {
+                                        (mTarget!!.fileUri.toString())
+                                    } else
+                                        ""
+                                }
+                                else -> ""
+                            }
+
+//                            val url = URL(urlFile)
+//                            val connection: HttpURLConnection =
+//                                url.openConnection() as HttpURLConnection
+//                            val code: Int = connection.responseCode
+//
+//                            if (code == 200) {
                             mPlayerAdapter!!.reset(false)
                             initializePlaybackController()
                             mPlayerAdapter!!.loadMedia(mTarget)
+//                            } else {
+//                                mErrorButton?.visibility = View.VISIBLE
+//                            }
                         }
                         mPlayerAdapter!!.play()
                         mPlayButton?.visibility = View.GONE
@@ -260,17 +296,11 @@ class PhonicPlayerView : RelativeLayout {
     }
 
     inner class OnPlaybackListener : OnPlaybackInfoListener() {
-
-
         override fun onDurationChanged(duration: Int) {
             mCircleProgressBar?.setMax(duration)
             mSeekBar?.max = duration
             if (mDuration != null)
                 mDuration!!.text = PlayerUtils.getDurationFormat(duration.toLong())
-            Log.d(
-                TAG,
-                String.format("setPlaybackDuration: setMax(%d)", duration)
-            )
         }
 
         override fun onPositionChanged(position: Int) {
@@ -291,50 +321,56 @@ class PhonicPlayerView : RelativeLayout {
                 if (mChronometer != null) mChronometer!!.start()
             } else if (state == State.PAUSED) {
                 if (mChronometer != null) mChronometer!!.stop()
+            } else {
+                if (mChronometer != null) mChronometer!!.stop()
+
+                mPlayButton?.visibility = View.GONE
+                mPauseButton?.visibility = View.GONE
+                mErrorButton?.visibility = View.VISIBLE
             }
         }
 
         override fun onPlaybackCompleted() {
-            println("===onPlaybackCompleted==")
         }
 
         override fun onLogUpdated(message: String?) {
-            Log.i(TAG, message!!)
-            println("===onLogUpdated==")
         }
-
     }
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        Log.i(TAG, "on Detached Window called ==> detach AudioPlayer")
     }
 
-    private fun downloadFile(url: String, name: String) {
-        mCircleProgressBarDownload?.visibility = View.VISIBLE
-        PRDownloader.download(url, folderDirectory, name).build()
-            .setOnStartOrResumeListener { }
-            .setOnProgressListener { progress ->
-                val mFloat = progress.currentBytes.toFloat()
-                val mPercentage = mFloat / progress.totalBytes * 100
-                mCircleProgressBarDownload?.setProgress(mPercentage)
-            }.start(object : OnDownloadListener {
-                override fun onDownloadComplete() {
-                    mPlayButton!!.setImageResource(R.drawable.icon_play_audio)
-                    mCircleProgressBarDownload?.visibility = View.GONE
-                    val mUri =
-                        Uri.parse("$folderDirectory/$mStringName")
-                    mTarget =
-                        PlayerTarget.Builder().withLocalFile(mUri).build()
-                }
+    private fun downloadFile(urlFile: String, name: String) {
+        val url = URL(urlFile)
+        val connection: HttpURLConnection = url.openConnection() as HttpURLConnection
+        val code: Int = connection.responseCode
 
-                override fun onError(error: com.downloader.Error?) {
-                    mCircleProgressBarDownload?.visibility = View.GONE
-                    System.out.println("===ERRORR==" + error)
-                }
+        if (code == 200) {
+            mCircleProgressBarDownload?.visibility = View.VISIBLE
+            PRDownloader.download(urlFile, folderDirectory, name).build()
+                .setOnStartOrResumeListener { }
+                .setOnProgressListener { progress ->
+                    val mFloat = progress.currentBytes.toFloat()
+                    val mPercentage = mFloat / progress.totalBytes * 100
+                    mCircleProgressBarDownload?.setProgress(mPercentage)
+                }.start(object : OnDownloadListener {
+                    override fun onDownloadComplete() {
+                        mPlayButton!!.setImageResource(R.drawable.icon_play_audio)
+                        mCircleProgressBarDownload?.visibility = View.GONE
+                        val mUri =
+                            Uri.parse("$folderDirectory/$mStringName")
+                        mTarget =
+                            PlayerTarget.Builder().withLocalFile(mUri).build()
+                    }
 
-
-            })
+                    override fun onError(error: com.downloader.Error?) {
+                        mCircleProgressBarDownload?.visibility = View.GONE
+                    }
+                })
+        } else {
+            mErrorButton?.visibility = View.VISIBLE
+        }
     }
 
     private fun isFileExist(path: String): Boolean {
@@ -351,9 +387,9 @@ class PhonicPlayerView : RelativeLayout {
         get() {
             var appPath = ""
             try {
-                val SDCardRoot = Environment.getExternalStorageDirectory()
+                val sdCardRoot = Environment.getExternalStorageDirectory()
                 val folder = File(
-                    SDCardRoot, mStringDirectory + "/audio/"
+                    sdCardRoot, "$mStringDirectory/audio/"
                 )
                 if (!folder.exists()) folder.mkdirs()
                 appPath = folder.absolutePath
@@ -380,17 +416,16 @@ class PhonicPlayerView : RelativeLayout {
         if (writePermission != PackageManager.PERMISSION_GRANTED) {
             listPermissionsNeeded.add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
         }
-        if (!listPermissionsNeeded.isEmpty()) {
-            ActivityCompat.requestPermissions(
-                (mContext as Activity?)!!,
-                listPermissionsNeeded.toTypedArray(), 101
-            )
+        if (listPermissionsNeeded.isNotEmpty()) {
+            activity?.let {
+                ActivityCompat.requestPermissions(
+                    it,
+                    listPermissionsNeeded.toTypedArray(), 101
+                )
+            }
             return false
         }
         return true
     }
 
-    companion object {
-        const val TAG = "============"
-    }
 }
