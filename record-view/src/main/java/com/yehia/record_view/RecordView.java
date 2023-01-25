@@ -129,8 +129,6 @@ public class RecordView extends RelativeLayout {
             int slideMarginRight = (int) typedArray.getDimension(R.styleable.RecordView_slide_to_cancel_margin_right, 30);
             int counterTimeColor = typedArray.getColor(R.styleable.RecordView_counter_time_color, -1);
             int arrowColor = typedArray.getColor(R.styleable.RecordView_slide_to_cancel_arrow_color, -1);
-
-
             int cancelBounds = typedArray.getDimensionPixelSize(R.styleable.RecordView_slide_to_cancel_bounds, -1);
 
             if (cancelBounds != -1)
@@ -147,20 +145,14 @@ public class RecordView extends RelativeLayout {
             if (counterTimeColor != -1)
                 setCounterTimeColor(counterTimeColor);
 
-
             if (arrowColor != -1)
                 setSlideToCancelArrowColor(arrowColor);
 
-
             setMarginRight(slideMarginRight, true);
-
             typedArray.recycle();
         }
 
-
         animationHelper = new AnimationHelper(context, basketImg, smallBlinkingMic, isRecordButtonGrowingAnimationEnabled);
-
-
     }
 
     private boolean isTimeLimitValid() {
@@ -207,17 +199,13 @@ public class RecordView extends RelativeLayout {
         counterTime.setVisibility(VISIBLE);
     }
 
-
     private boolean isLessThanOneSecond(long time) {
         return time <= 1000;
     }
 
-
     private void playSound(int soundRes) {
-
         if (isSoundEnabled) {
-            if (soundRes == 0)
-                return;
+            if (soundRes == 0) return;
 
             try {
                 player = new MediaPlayer();
@@ -227,26 +215,15 @@ public class RecordView extends RelativeLayout {
                 afd.close();
                 player.prepare();
                 player.start();
-                player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-
-                    @Override
-                    public void onCompletion(MediaPlayer mp) {
-                        mp.release();
-                    }
-
-                });
+                player.setOnCompletionListener(MediaPlayer::release);
                 player.setLooping(false);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-
-
     }
 
-
     protected void onActionDown(RecordButton recordBtn, MotionEvent motionEvent) {
-
         boolean audio = EX.checkPermission(Manifest.permission.RECORD_AUDIO, getContext());
         boolean readStorage =
                 EX.checkPermission(Manifest.permission.READ_EXTERNAL_STORAGE, getContext());
@@ -300,7 +277,6 @@ public class RecordView extends RelativeLayout {
         isSwiped = false;
     }
 
-
     public void onPermission() {
         String[] perms = {Manifest.permission.RECORD_AUDIO,
                 Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -311,8 +287,9 @@ public class RecordView extends RelativeLayout {
     }
 
     private void startRecord() {
+/*
 
-       /* if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             ContentValues values = new ContentValues(4);
             values.put(MediaStore.Audio.Media.TITLE, fileName);
             values.put(
@@ -357,7 +334,8 @@ public class RecordView extends RelativeLayout {
             mediaRecorder.prepare();
         } catch (IOException e) {
         }
-        mediaRecorder.start();*/
+        mediaRecorder.start();
+*/
 
         recordFile = new File(context.getFilesDir(), UUID.randomUUID().toString() + "." + type);
         try {
@@ -544,7 +522,6 @@ public class RecordView extends RelativeLayout {
             handler.removeCallbacks(runnable);
         }
     }
-
 
     private boolean isRecordPermissionGranted() {
         if (recordPermissionHandler == null) {

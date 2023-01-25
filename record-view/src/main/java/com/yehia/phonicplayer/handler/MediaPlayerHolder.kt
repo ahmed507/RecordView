@@ -194,13 +194,6 @@ class MediaPlayerHolder(context: Context) : PlayerAdapter, MediaActionHandler {
         if (mOnPlaybackInfoListener != null) {
             mOnPlaybackInfoListener!!.onDurationChanged(duration)
             mOnPlaybackInfoListener!!.onPositionChanged(0)
-            logToUI(
-                String.format(
-                    "firing setPlaybackDuration(%d sec)",
-                    TimeUnit.MILLISECONDS.toSeconds(duration.toLong())
-                )
-            )
-            logToUI("firing setPlaybackPosition(0)")
         }
     }
 

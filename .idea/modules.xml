@@ -4,7 +4,13 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/RecordView.iml" filepath="$PROJECT_DIR$/.idea/modules/RecordView.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/RecordView.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/RecordView.app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/RecordView.app.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/RecordView.app.androidTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/RecordView.app.main.iml" filepath="$PROJECT_DIR$/.idea/modules/app/RecordView.app.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/RecordView.app.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/RecordView.app.unitTest.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/record-view/RecordView.record-view.iml" filepath="$PROJECT_DIR$/.idea/modules/record-view/RecordView.record-view.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/record-view/RecordView.record-view.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/record-view/RecordView.record-view.androidTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/record-view/RecordView.record-view.main.iml" filepath="$PROJECT_DIR$/.idea/modules/record-view/RecordView.record-view.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/record-view/RecordView.record-view.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/record-view/RecordView.record-view.unitTest.iml" />
     </modules>
   </component>
 </project>

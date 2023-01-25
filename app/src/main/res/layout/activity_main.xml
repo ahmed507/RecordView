@@ -14,35 +14,34 @@
         android:layout_centerInParent="true"
         android:text="Change onClick" />
 
+<!--    <com.yehia.record_view.RecordView-->
+<!--        android:id="@+id/record_view"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_alignParentBottom="true"-->
+<!--        android:layout_toLeftOf="@id/record_button"-->
+<!--        app:counter_time_color="#ff0000"-->
+<!--        app:slide_to_cancel_arrow="@drawable/recv_ic_arrow"-->
+<!--        app:slide_to_cancel_arrow_color="#000000"-->
+<!--        app:slide_to_cancel_bounds="10dp"-->
+<!--        app:slide_to_cancel_margin_right="10dp"-->
+<!--        app:slide_to_cancel_text="Slide To Cancel" />-->
 
-    <com.yehia.record_view.RecordView
-        android:id="@+id/record_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_toLeftOf="@id/record_button"
-        app:counter_time_color="#ff0000"
-        app:slide_to_cancel_arrow="@drawable/recv_ic_arrow"
-        app:slide_to_cancel_arrow_color="#000000"
-        app:slide_to_cancel_bounds="10dp"
-        app:slide_to_cancel_margin_right="10dp"
-        app:slide_to_cancel_text="Slide To Cancel" />
+<!--    <com.yehia.record_view.RecordButton-->
+<!--        android:id="@+id/record_button"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_alignParentEnd="true"-->
+<!--        android:layout_alignParentBottom="true"-->
+<!--        android:background="@drawable/recv_bg_mic"-->
+<!--        android:scaleType="centerInside"-->
+<!--        app:mic_icon="@drawable/recv_ic_mic_white"-->
+<!--        tools:ignore="SpeakableTextPresentCheck" />-->
 
-    <com.yehia.record_view.RecordButton
-        android:id="@+id/record_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:background="@drawable/recv_bg_mic"
-        android:scaleType="centerInside"
-        app:mic_icon="@drawable/recv_ic_mic_white" />
-
-    <com.yehia.phonicplayer.views.PhonicPlayerView
+    <com.yehia.phonicplayer.views.PhonicPlayerView2
         android:id="@+id/record_plays"
         android:layout_width="match_parent"
-        android:layout_margin="@dimen/_16sdp"
         android:layout_height="wrap_content"
-        app:custom_layout="@layout/view_audio_player_2"/>
+        android:layout_margin="@dimen/_16sdp"/>
 
 </RelativeLayout>
