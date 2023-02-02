@@ -178,7 +178,7 @@ class PhonicPlayerView : RelativeLayout {
         mChronometer = findViewById(R.id.current_duration)
         mDuration = findViewById(R.id.total_duration)
         centerDuration = findViewById(R.id.center_duration)
-        mStringDirectory = mContext!!.getString(R.string.app_name)
+//        mStringDirectory = mContext!!.getString(R.string.app_name)
         initializePlaybackController()
 
         if (!durationStart) {
