@@ -122,12 +122,13 @@ class PhonicPlayerView2 : RelativeLayout {
         mPauseButton?.setImageResource(pause)
     }
 
-    fun setAudioTarget(url: String, activity: Activity) {
+    fun setAudioTarget(url: String, activity: Activity, duration: String = "") {
         this.activity = activity
         if (url.isNotEmpty()) {
             this.url = url
             mTarget = PlayerTarget.Builder().withRemoteUrl(url).build()
         }
+        mDuration!!.text = duration
     }
 
     fun setAudioTarget(url: String, name: String, activity: Activity) {
@@ -193,6 +194,8 @@ class PhonicPlayerView2 : RelativeLayout {
             mDuration!!.visibility = GONE
             centerDuration!!.visibility = GONE
         }
+
+        mSeekBar?.sample = mSeekBar?.context?.resources?.getIntArray(R.array.wave)
 
         mSeekBar?.onProgressChanged = object : SeekBarOnProgressChanged {
             override fun onProgressChanged(

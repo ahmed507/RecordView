@@ -27,7 +27,7 @@ public class ItemsAudAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.binding.recordPlays.setAudioTarget(
             "https://www.eroshen.com/up2/uploads/1445668835931.mp3?fbclid=IwAR1G3L02lfn2HBf__WcNAIXaqxwqcXPw7aUdzHPRFSwZzU7nRmPOjTNHwHQ",
-            activity
+            activity,3000
         )
     }
 
