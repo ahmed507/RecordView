@@ -116,10 +116,11 @@ class PhonicPlayerView2 : RelativeLayout {
         mTarget = PlayerTarget.Builder().withResource(resource).build()
     }
 
-    fun setColor(color: Int, play: Int, pause: Int) {
-        mSeekBar?.markerColor = ContextCompat.getColor(mSeekBar?.context!!, color)
-        mPlayButton?.setImageResource(play)
-        mPauseButton?.setImageResource(pause)
+    fun setColor(color: Int) {
+        mSeekBar?.waveBackgroundColor = ContextCompat.getColor(context, color)
+        mSeekBar?.waveProgressColor = ContextCompat.getColor(context, color)
+        mPlayButton?.setColorFilter(ContextCompat.getColor(context, color), android.graphics.PorterDuff.Mode.MULTIPLY)
+        mPauseButton?.setColorFilter(ContextCompat.getColor(context, color), android.graphics.PorterDuff.Mode.MULTIPLY)
     }
 
     fun setAudioTarget(url: String, activity: Activity, duration: String = "") {
