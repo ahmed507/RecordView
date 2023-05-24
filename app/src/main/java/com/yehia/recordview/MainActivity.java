@@ -1,11 +1,26 @@
 package com.yehia.recordview;
 
+import static android.content.pm.PackageManager.PERMISSION_GRANTED;
+
+import android.Manifest;
+import android.graphics.Color;
 import android.media.MediaPlayer;
+import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.yehia.record_view.OnBasketAnimationEnd;
+import com.yehia.record_view.OnRecordClickListener;
+import com.yehia.record_view.RecordButton;
+import com.yehia.record_view.RecordView;
 
 import java.util.concurrent.TimeUnit;
 
@@ -14,6 +29,9 @@ public class MainActivity extends AppCompatActivity {
     private AudioRecorder audioRecorder;
     MediaPlayer mediaPlayer = null;
     RecyclerView recyclerView;
+    private Button btnChangeOnclick;
+    private RecordView recordView;
+    private RecordButton recordButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,8 +40,10 @@ public class MainActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        recyclerView = findViewById(R.id.list_item);
-
+//        recyclerView = findViewById(R.id.list_item);
+        recordButton = findViewById(R.id.record_button);
+        recordView = findViewById(R.id.record_view);
+        btnChangeOnclick = findViewById(R.id.btn_change_onclick);
 //        recyclerView.setLayoutManager(new LinearLayoutManager(this));
 //        recyclerView.setAdapter(new ItemsAudAdapter(this));
     }
@@ -33,10 +53,10 @@ public class MainActivity extends AppCompatActivity {
         super.onStart();
 
         //IMPORTANT
-//        recordButton.setRecordView(recordView);
+        recordButton.setRecordView(recordView);
 
-        // if you want to click the button (in case if you want to make the record button a Send Button for example..)
-//        recordButton.setListenForRecord(false);
+//         if you want to click the button (in case if you want to make the record button a Send Button for example..)
+        recordButton.setListenForRecord(false);
 
 //        btnChangeOnclick.setOnClickListener(new View.OnClickListener() {
 //            @Override
@@ -51,8 +71,8 @@ public class MainActivity extends AppCompatActivity {
 //                }
 //            }
 //        });
-
-        //ListenForRecord must be false ,otherwise onClick will not be called
+//
+////        ListenForRecord must be false, otherwise onClick will not be called
 //        recordButton.setOnRecordClickListener(new OnRecordClickListener() {
 //            @Override
 //            public void onClick(View v) {
@@ -61,7 +81,9 @@ public class MainActivity extends AppCompatActivity {
 //            }
 //        });
 
-        //Cancel Bounds is when the Slide To Cancel text gets before the timer . default is 8
+//        Cancel Bounds is when the Slide To Cancel text gets before the timer.
+//        default
+//        is 8
 //        recordView.setCancelBounds(8);
 //
 //        recordView.setSmallMicColor(Color.parseColor("#c2185b"));
@@ -71,44 +93,7 @@ public class MainActivity extends AppCompatActivity {
 //
 //        recordView.setSlideToCancelText("Slide To Cancel");
 //
-//        recordView.setCustomSounds(R.raw.record_start, R.raw.record_finished, 0);
-
-
-//        recordView.setOnRecordListener(this, new OnRecordListener() {
-//            @Override
-//            public void onStart() {
-//                recordFile = new File(getFilesDir(), UUID.randomUUID().toString() + ".3gp");
-//
-//            }
-//
-//            @Override
-//            public void onCancel() {
-//                stopRecording(true);
-//
-//                Toast.makeText(MainActivity.this, "onCancel", Toast.LENGTH_SHORT).show();
-//
-//                Log.d("RecordView", "onCancel");
-//
-//            }
-//
-//            @Override
-//            public void onFinish(long recordTime, boolean limitReached, String file) {
-//                stopRecording(false);
-//
-//                String time = getHumanTimeText(recordTime);
-//                Toast.makeText(MainActivity.this, "onFinishRecord - Recorded Time is: " + time + " File saved at " + recordFile.getPath(), Toast.LENGTH_SHORT).show();
-//                Log.d("RecordView", "onFinish" + " Limit Reached? " + limitReached);
-//                Log.d("RecordTime", time);
-//            }
-//
-//            @Override
-//            public void onLessThanSecond() {
-//                stopRecording(true);
-//
-//                Toast.makeText(MainActivity.this, "OnLessThanSecond", Toast.LENGTH_SHORT).show();
-//                Log.d("RecordView", "onLessThanSecond");
-//            }
-//        });
+////        recordView.setCustomSounds(R.raw.record_start, R.raw.record_finished, 0);
 //
 //
 //        recordView.setOnBasketAnimationEndListener(new OnBasketAnimationEnd() {
@@ -132,13 +117,6 @@ public class MainActivity extends AppCompatActivity {
 //
 //            return false;
 //        });
-    }
-
-    private void stopRecording(boolean deleteFile) {
-//        audioRecorder.stop();
-//        if (recordFile != null && deleteFile) {
-//            recordFile.delete();
-//        }
     }
 
     private String getHumanTimeText(long milliseconds) {

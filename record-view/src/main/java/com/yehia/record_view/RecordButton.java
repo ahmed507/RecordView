@@ -97,7 +97,6 @@ public class RecordButton extends AppCompatImageView implements View.OnTouchList
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (count > 0) {
                     setTheImageResource(drawable);
-//                    type = SEND_
                 } else {
                     if (imageResource != -1) {
                         setTheImageResource(imageResource);

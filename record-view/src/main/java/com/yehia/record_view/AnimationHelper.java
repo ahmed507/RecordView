@@ -1,5 +1,8 @@
 package com.yehia.record_view;
 
+import static android.view.View.INVISIBLE;
+import static android.view.View.VISIBLE;
+
 import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
@@ -17,13 +20,11 @@ import android.widget.ImageView;
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 import androidx.vectordrawable.graphics.drawable.AnimatorInflaterCompat;
 
-import static android.view.View.INVISIBLE;
-import static android.view.View.VISIBLE;
-
 /**
  * Edit by Yehia Reda on 05/01/2022.
  */
 public class AnimationHelper {
+
     private final Context context;
     private final AnimatedVectorDrawableCompat animatedVectorDrawable;
     private final ImageView basketImg;
@@ -82,12 +83,9 @@ public class AnimationHelper {
         basketImg.setImageDrawable(animatedVectorDrawable);
 
         handler1 = new Handler();
-        handler1.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                basketImg.setVisibility(VISIBLE);
-                basketImg.startAnimation(translateAnimation1);
-            }
+        handler1.postDelayed(() -> {
+            basketImg.setVisibility(VISIBLE);
+            basketImg.startAnimation(translateAnimation1);
         }, 350);
 
         translateAnimation1.setAnimationListener(new Animation.AnimationListener() {
@@ -97,19 +95,14 @@ public class AnimationHelper {
 
             @Override
             public void onAnimationEnd(Animation animation) {
-
+                assert animatedVectorDrawable != null;
                 animatedVectorDrawable.start();
                 handler2 = new Handler();
-                handler2.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        basketImg.startAnimation(translateAnimation2);
-                        smallBlinkingMic.setVisibility(INVISIBLE);
-                        basketImg.setVisibility(INVISIBLE);
-                    }
+                handler2.postDelayed(() -> {
+                    basketImg.startAnimation(translateAnimation2);
+                    smallBlinkingMic.setVisibility(INVISIBLE);
+                    basketImg.setVisibility(INVISIBLE);
                 }, 450);
-
-
             }
 
             @Override
@@ -117,7 +110,6 @@ public class AnimationHelper {
 
             }
         });
-
 
         translateAnimation2.setAnimationListener(new Animation.AnimationListener() {
             @Override
@@ -131,8 +123,6 @@ public class AnimationHelper {
 
                 isBasketAnimating = false;
 
-                //if the user pressed the record button while the animation is running
-                // then do NOT call on Animation end
                 if (onBasketAnimationEndListener != null && !isStartRecorded) {
                     onBasketAnimationEndListener.onAnimationEnd();
                 }
@@ -143,31 +133,23 @@ public class AnimationHelper {
 
             }
         });
-
-
     }
-
 
     //if the user started a new Record while the Animation is running
     // then we want to stop the current animation and revert views back to default state
     public void resetBasketAnimation() {
         if (isBasketAnimating) {
-
             translateAnimation1.reset();
             translateAnimation1.cancel();
             translateAnimation2.reset();
             translateAnimation2.cancel();
-
             micAnimation.cancel();
 
             smallBlinkingMic.clearAnimation();
             basketImg.clearAnimation();
 
-
-            if (handler1 != null)
-                handler1.removeCallbacksAndMessages(null);
-            if (handler2 != null)
-                handler2.removeCallbacksAndMessages(null);
+            if (handler1 != null) handler1.removeCallbacksAndMessages(null);
+            if (handler2 != null) handler2.removeCallbacksAndMessages(null);
 
             basketImg.setVisibility(INVISIBLE);
             smallBlinkingMic.setX(micX);
@@ -175,11 +157,8 @@ public class AnimationHelper {
             smallBlinkingMic.setVisibility(View.GONE);
 
             isBasketAnimating = false;
-
-
         }
     }
-
 
     public void clearAlphaAnimation(boolean hideView) {
         alphaAnimation.cancel();
@@ -199,17 +178,12 @@ public class AnimationHelper {
     }
 
     public void moveRecordButtonAndSlideToCancelBack(final RecordButton recordBtn, FrameLayout slideToCancelLayout, float initialX, float difX) {
-
-        final ValueAnimator positionAnimator =
-                ValueAnimator.ofFloat(recordBtn.getX(), initialX);
+        final ValueAnimator positionAnimator = ValueAnimator.ofFloat(recordBtn.getX(), initialX);
 
         positionAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
-        positionAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                float x = (Float) animation.getAnimatedValue();
-                recordBtn.setX(x);
-            }
+        positionAnimator.addUpdateListener(animation -> {
+            float x = (Float) animation.getAnimatedValue();
+            recordBtn.setX(x);
         });
 
         if (recordButtonGrowingAnimationEnabled) {
@@ -218,17 +192,11 @@ public class AnimationHelper {
         positionAnimator.setDuration(0);
         positionAnimator.start();
 
-
         // if the move event was not called ,then the difX will still 0 and there is no need to move it back
         if (difX != 0) {
             float x = initialX - difX;
-            slideToCancelLayout.animate()
-                    .x(x)
-                    .setDuration(0)
-                    .start();
+            slideToCancelLayout.animate().x(x).setDuration(0).start();
         }
-
-
     }
 
     public void resetSmallMic() {
@@ -239,17 +207,14 @@ public class AnimationHelper {
 
     public void setOnBasketAnimationEndListener(OnBasketAnimationEnd onBasketAnimationEndListener) {
         this.onBasketAnimationEndListener = onBasketAnimationEndListener;
-
     }
 
     protected void onAnimationEnd() {
-        if (onBasketAnimationEndListener != null)
-            onBasketAnimationEndListener.onAnimationEnd();
+        if (onBasketAnimationEndListener != null) onBasketAnimationEndListener.onAnimationEnd();
     }
 
     //check if the user started a new Record by pressing the RecordButton
     public void setStartRecorded(boolean startRecorded) {
         isStartRecorded = startRecorded;
     }
-
 }

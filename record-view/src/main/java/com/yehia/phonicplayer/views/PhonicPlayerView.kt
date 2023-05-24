@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.media.MediaMetadataRetriever
 import android.net.Uri
-import android.os.Build
 import android.os.Environment
 import android.util.AttributeSet
 import android.util.Log
@@ -16,7 +15,6 @@ import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.SeekBar
 import android.widget.TextView
-import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.downloader.OnDownloadListener
@@ -37,7 +35,6 @@ import java.util.concurrent.TimeUnit
 /**
  * Edit by Yehia Reda on 05/03/2022.
  */
-
 class PhonicPlayerView : RelativeLayout {
 
     private var activity: Activity? = null
@@ -54,6 +51,8 @@ class PhonicPlayerView : RelativeLayout {
     private var mPlayerAdapter: PlayerAdapter? = null
     private var mTarget: PlayerTarget? = null
     private var customLayout = 0
+    private var btnIcon = 0
+    private var seekSelector = 0
     private var mContext: Context? = null
     private var mStringName = ""
     private var mStringURL = ""
@@ -62,7 +61,6 @@ class PhonicPlayerView : RelativeLayout {
 
     private var durationStart: Boolean = true
     private var durationEnd: Boolean = true
-    private var duration: String = "0"
 
     constructor(context: Context?) : super(context) {
         init(context)
@@ -74,15 +72,12 @@ class PhonicPlayerView : RelativeLayout {
     }
 
     constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : super(
-        context,
-        attrs,
-        defStyleAttr
+        context, attrs, defStyleAttr
     ) {
         getAttributes(context, attrs)
         init(context)
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     constructor(
         context: Context, attrs: AttributeSet, defStyleAttr: Int, defStyleRes: Int
     ) : super(context, attrs, defStyleAttr, defStyleRes) {
@@ -91,20 +86,21 @@ class PhonicPlayerView : RelativeLayout {
     }
 
     private fun getAttributes(context: Context, attrs: AttributeSet) {
-        val ta = context.theme
-            .obtainStyledAttributes(attrs, R.styleable.PhonicPlayerViewAtt, 0, 0)
+        val ta = context.theme.obtainStyledAttributes(attrs, R.styleable.PhonicPlayerViewAtt, 0, 0)
         customLayout = ta.getResourceId(
-            R.styleable.PhonicPlayerViewAtt_custom_layout,
-            R.layout.view_audio_player_1
+            R.styleable.PhonicPlayerViewAtt_custom_layout, R.layout.view_audio_player_2
         )
-
+        btnIcon = ta.getResourceId(
+            R.styleable.PhonicPlayerViewAtt_btn_color, R.color.colorPrimary
+        )
+        seekSelector = ta.getResourceId(
+            R.styleable.PhonicPlayerViewAtt_seek_selector, R.drawable.seekbar_bg
+        )
         durationStart = ta.getBoolean(
-            R.styleable.PhonicPlayerViewAtt_duration_start,
-            true
+            R.styleable.PhonicPlayerViewAtt_duration_start, true
         )
         durationEnd = ta.getBoolean(
-            R.styleable.PhonicPlayerViewAtt_duration_end,
-            true
+            R.styleable.PhonicPlayerViewAtt_duration_end, true
         )
     }
 
@@ -120,8 +116,7 @@ class PhonicPlayerView : RelativeLayout {
 
     fun setAudioTarget(url: String, activity: Activity) {
         this.activity = activity
-        if (!url.isEmpty()) mTarget =
-            PlayerTarget.Builder().withRemoteUrl(url).build()
+        if (url.isNotEmpty()) mTarget = PlayerTarget.Builder().withRemoteUrl(url).build()
     }
 
     fun setAudioTarget(url: String, name: String, activity: Activity) {
@@ -136,15 +131,8 @@ class PhonicPlayerView : RelativeLayout {
         }
     }
 
-    /**
-     * Registers click listener for view by id
-     *
-     * @param viewId                    view
-     * @param onPlayerViewClickListener click listener.
-     */
     fun registerViewClickListener(
-        viewId: Int,
-        onPlayerViewClickListener: OnPlayerViewClickListener
+        viewId: Int, onPlayerViewClickListener: OnPlayerViewClickListener
     ) {
         playerViewClickListenersArray.append(viewId, onPlayerViewClickListener)
     }
@@ -157,14 +145,8 @@ class PhonicPlayerView : RelativeLayout {
         }
     }
 
-    /**
-     * We only load the media file whe the play button is clicked the first time
-     */
     private fun init(context: Context?) {
-
-        val config = PRDownloaderConfig.newBuilder()
-            .setDatabaseEnabled(true)
-            .build()
+        val config = PRDownloaderConfig.newBuilder().setDatabaseEnabled(true).build()
         PRDownloader.initialize(context, config)
 
         mContext = context
@@ -178,8 +160,16 @@ class PhonicPlayerView : RelativeLayout {
         mChronometer = findViewById(R.id.current_duration)
         mDuration = findViewById(R.id.total_duration)
         centerDuration = findViewById(R.id.center_duration)
-//        mStringDirectory = mContext!!.getString(R.string.app_name)
+
         initializePlaybackController()
+        mPlayButton?.setColorFilter(
+            ContextCompat.getColor(mContext!!, btnIcon), android.graphics.PorterDuff.Mode.MULTIPLY
+        )
+        mPauseButton?.setColorFilter(
+            ContextCompat.getColor(mContext!!, btnIcon), android.graphics.PorterDuff.Mode.MULTIPLY
+        )
+
+        mSeekBar?.progressDrawable = ContextCompat.getDrawable(mContext!!, seekSelector)
 
         if (!durationStart) {
             mChronometer!!.visibility = GONE
@@ -190,13 +180,11 @@ class PhonicPlayerView : RelativeLayout {
             mDuration!!.visibility = GONE
             centerDuration!!.visibility = GONE
         }
-
-
         mPauseButton?.setOnClickListener {
             if (mPlayerAdapter != null) {
                 mPlayerAdapter!!.pause()
-                mPlayButton?.setVisibility(View.VISIBLE)
-                mPauseButton?.setVisibility(View.GONE)
+                mPlayButton?.visibility = View.VISIBLE
+                mPauseButton?.visibility = View.GONE
             }
         }
         mPlayButton?.setOnClickListener {
@@ -219,24 +207,14 @@ class PhonicPlayerView : RelativeLayout {
                                     val audioFile = File(mTarget!!.fileUri.toString())
                                     if (audioFile.exists()) {
                                         (mTarget!!.fileUri.toString())
-                                    } else
-                                        ""
+                                    } else ""
                                 }
                                 else -> ""
                             }
 
-//                            val url = URL(urlFile)
-//                            val connection: HttpURLConnection =
-//                                url.openConnection() as HttpURLConnection
-//                            val code: Int = connection.responseCode
-//
-//                            if (code == 200) {
                             mPlayerAdapter!!.reset(false)
                             initializePlaybackController()
                             mPlayerAdapter!!.loadMedia(mTarget)
-//                            } else {
-//                                mErrorButton?.visibility = View.VISIBLE
-//                            }
                         }
                         mPlayerAdapter!!.play()
                         mPlayButton?.visibility = View.GONE
@@ -255,8 +233,7 @@ class PhonicPlayerView : RelativeLayout {
 
     fun setTotalDuration(duration: Long) {
         try {
-            if (mDuration != null) mDuration!!.text =
-                PlayerUtils.getDurationFormat(duration * 1000)
+            if (mDuration != null) mDuration!!.text = PlayerUtils.getDurationFormat(duration * 1000)
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -275,8 +252,7 @@ class PhonicPlayerView : RelativeLayout {
         val seconds = TimeUnit.MILLISECONDS.toSeconds(millisecond)
         val minutes = TimeUnit.MILLISECONDS.toMinutes(millisecond)
         val totalDurations = String.format(
-            "%02d:%02d", TimeUnit.MILLISECONDS.toMinutes(millisecond),
-            seconds - minutes * 60
+            "%02d:%02d", TimeUnit.MILLISECONDS.toMinutes(millisecond), seconds - minutes * 60
         )
         if (mDuration != null) mDuration!!.text = totalDurations
     }
@@ -299,8 +275,8 @@ class PhonicPlayerView : RelativeLayout {
         override fun onDurationChanged(duration: Int) {
             mCircleProgressBar?.setMax(duration)
             mSeekBar?.max = duration
-            if (mDuration != null)
-                mDuration!!.text = PlayerUtils.getDurationFormat(duration.toLong())
+            if (mDuration != null) mDuration!!.text =
+                PlayerUtils.getDurationFormat(duration.toLong())
         }
 
         override fun onPositionChanged(position: Int) {
@@ -349,8 +325,7 @@ class PhonicPlayerView : RelativeLayout {
         if (code == 200) {
             mCircleProgressBarDownload?.visibility = View.VISIBLE
             PRDownloader.download(urlFile, folderDirectory, name).build()
-                .setOnStartOrResumeListener { }
-                .setOnProgressListener { progress ->
+                .setOnStartOrResumeListener { }.setOnProgressListener { progress ->
                     val mFloat = progress.currentBytes.toFloat()
                     val mPercentage = mFloat / progress.totalBytes * 100
                     mCircleProgressBarDownload?.setProgress(mPercentage)
@@ -358,10 +333,8 @@ class PhonicPlayerView : RelativeLayout {
                     override fun onDownloadComplete() {
                         mPlayButton!!.setImageResource(R.drawable.icon_play_audio)
                         mCircleProgressBarDownload?.visibility = View.GONE
-                        val mUri =
-                            Uri.parse("$folderDirectory/$mStringName")
-                        mTarget =
-                            PlayerTarget.Builder().withLocalFile(mUri).build()
+                        val mUri = Uri.parse("$folderDirectory/$mStringName")
+                        mTarget = PlayerTarget.Builder().withLocalFile(mUri).build()
                     }
 
                     override fun onError(error: com.downloader.Error?) {
@@ -419,8 +392,7 @@ class PhonicPlayerView : RelativeLayout {
         if (listPermissionsNeeded.isNotEmpty()) {
             activity?.let {
                 ActivityCompat.requestPermissions(
-                    it,
-                    listPermissionsNeeded.toTypedArray(), 101
+                    it, listPermissionsNeeded.toTypedArray(), 101
                 )
             }
             return false

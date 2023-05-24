@@ -21,13 +21,13 @@ public class ItemsAudAdapter(
     }
 
     override fun getItemCount(): Int {
-        return 20
+        return 50
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.binding.recordPlays.setAudioTarget(
             "https://www.eroshen.com/up2/uploads/1445668835931.mp3?fbclid=IwAR1G3L02lfn2HBf__WcNAIXaqxwqcXPw7aUdzHPRFSwZzU7nRmPOjTNHwHQ",
-            activity,3000
+            activity,"3000"
         )
     }
 

@@ -11,9 +11,7 @@
     </declare-styleable>
 
     <declare-styleable name="RecordButton">
-
         <attr name="mic_icon" format="reference" />
-
     </declare-styleable>
 
     <declare-styleable name="CustomProgressBarAtt">
@@ -28,6 +26,8 @@
 
     <declare-styleable name="PhonicPlayerViewAtt">
         <attr name="custom_layout" format="reference" />
+        <attr name="btn_color" format="reference" />
+        <attr name="seek_selector" format="reference" />
         <attr name="is_in_list" format="boolean" />
         <attr name="duration_start" format="boolean" />
         <attr name="duration_end" format="boolean" />

@@ -40,7 +40,7 @@ import java.util.concurrent.TimeUnit
 /**
  * Edit by Yehia Reda on 05/03/2022.
  */
-class PhonicPlayerView2 : RelativeLayout {
+class WavePlayerView : RelativeLayout {
 
     private lateinit var url: String
     private var activity: Activity? = null
@@ -61,6 +61,8 @@ class PhonicPlayerView2 : RelativeLayout {
     private var mStringName = ""
     private var mStringURL = ""
     private var mStringDirectory = ""
+    private var btnIcon = 0
+    private var seekSelector = 0
     private val playerViewClickListenersArray = SparseArray<OnPlayerViewClickListener>()
 
     private var durationStart: Boolean = true
@@ -96,7 +98,12 @@ class PhonicPlayerView2 : RelativeLayout {
         customLayout = ta.getResourceId(
             R.styleable.PhonicPlayerViewAtt_custom_layout, R.layout.view_audio_player_3
         )
-
+        btnIcon = ta.getResourceId(
+            R.styleable.PhonicPlayerViewAtt_btn_color, R.color.colorPrimary
+        )
+        seekSelector = ta.getResourceId(
+            R.styleable.PhonicPlayerViewAtt_seek_selector, R.drawable.seekbar_bg
+        )
         durationStart = ta.getBoolean(
             R.styleable.PhonicPlayerViewAtt_duration_start, true
         )
@@ -119,8 +126,12 @@ class PhonicPlayerView2 : RelativeLayout {
     fun setColor(color: Int) {
         mSeekBar?.waveBackgroundColor = ContextCompat.getColor(context, color)
         mSeekBar?.waveProgressColor = ContextCompat.getColor(context, color)
-        mPlayButton?.setColorFilter(ContextCompat.getColor(context, color), android.graphics.PorterDuff.Mode.MULTIPLY)
-        mPauseButton?.setColorFilter(ContextCompat.getColor(context, color), android.graphics.PorterDuff.Mode.MULTIPLY)
+        mPlayButton?.setColorFilter(
+            ContextCompat.getColor(context, color), android.graphics.PorterDuff.Mode.MULTIPLY
+        )
+        mPauseButton?.setColorFilter(
+            ContextCompat.getColor(context, color), android.graphics.PorterDuff.Mode.MULTIPLY
+        )
     }
 
     fun setAudioTarget(url: String, activity: Activity, duration: String = "") {
@@ -185,6 +196,13 @@ class PhonicPlayerView2 : RelativeLayout {
         centerDuration = findViewById(R.id.center_duration)
 //        mStringDirectory = mContext!!.getString(R.string.app_name)
         initializePlaybackController()
+        mPlayButton?.setColorFilter(
+            ContextCompat.getColor(mContext!!, btnIcon), android.graphics.PorterDuff.Mode.MULTIPLY
+        )
+        mPauseButton?.setColorFilter(
+            ContextCompat.getColor(mContext!!, btnIcon), android.graphics.PorterDuff.Mode.MULTIPLY
+        )
+        setColor(btnIcon)
 
         if (!durationStart) {
             mChronometer!!.visibility = GONE

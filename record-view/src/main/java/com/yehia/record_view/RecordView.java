@@ -77,7 +77,7 @@ public class RecordView extends RelativeLayout {
 
     private boolean canRecord = true;
     private String recordPath = "";
-    public String type = "mp4";
+    public String type = "m4a";
     private Activity activity;
 
     private AudioRecorder audioRecorder;
