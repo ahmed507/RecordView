@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.media.MediaMetadataRetriever
 import android.net.Uri
+import android.os.Build
 import android.os.Environment
 import android.util.AttributeSet
 import android.util.Log
@@ -14,7 +15,9 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.SeekBar
+import android.widget.SeekBar.OnSeekBarChangeListener
 import android.widget.TextView
+import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.downloader.OnDownloadListener
@@ -58,6 +61,7 @@ class PhonicPlayerView : RelativeLayout {
     private var mStringURL = ""
     private var mStringDirectory = ""
     private val playerViewClickListenersArray = SparseArray<OnPlayerViewClickListener>()
+    private var positionFile: Int = 0
 
     private var durationStart: Boolean = true
     private var durationEnd: Boolean = true
@@ -187,6 +191,24 @@ class PhonicPlayerView : RelativeLayout {
                 mPauseButton?.visibility = View.GONE
             }
         }
+
+        mSeekBar?.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
+            override fun onProgressChanged(p0: SeekBar?, p1: Int, p2: Boolean) {
+                if (mPlayerAdapter != null && mPlayerAdapter?.isPlaying == true) {
+                    if (mSeekBar?.progress != positionFile) {
+                        mPlayerAdapter?.seekTo(mSeekBar?.progress ?: 0)
+                    }
+                }
+            }
+
+            override fun onStartTrackingTouch(p0: SeekBar?) {
+            }
+
+            override fun onStopTrackingTouch(p0: SeekBar?) {
+
+            }
+        })
+
         mPlayButton?.setOnClickListener {
             if (checkAndRequestPermissions()) {
                 if (mStringName.isNotEmpty() && !isFileExist("$folderDirectory/$mStringName")) {
@@ -199,9 +221,11 @@ class PhonicPlayerView : RelativeLayout {
                                 PlayerTarget.Type.RESOURCE -> {
                                     (mTarget!!.resource).toString()
                                 }
+
                                 PlayerTarget.Type.REMOTE_FILE_URL -> {
                                     (mTarget!!.remoteUrl).toString()
                                 }
+
                                 PlayerTarget.Type.LOCAL_FILE_URI -> {
                                     Log.e("MEDIAPLAY_HOLDER_TAG", "Type is LOCAL_FILE_URI")
                                     val audioFile = File(mTarget!!.fileUri.toString())
@@ -209,6 +233,7 @@ class PhonicPlayerView : RelativeLayout {
                                         (mTarget!!.fileUri.toString())
                                     } else ""
                                 }
+
                                 else -> ""
                             }
 
@@ -243,6 +268,7 @@ class PhonicPlayerView : RelativeLayout {
         mStringDirectory = directoryName
     }
 
+    @RequiresApi(Build.VERSION_CODES.GINGERBREAD_MR1)
     fun setTotalDurationFromPath(path: String?) {
         val mediaMetadataRetriever = MediaMetadataRetriever()
         mediaMetadataRetriever.setDataSource(mContext, Uri.parse(path))
@@ -282,6 +308,10 @@ class PhonicPlayerView : RelativeLayout {
         override fun onPositionChanged(position: Int) {
             mCircleProgressBar?.setProgress(position.toFloat())
             mSeekBar?.progress = position
+            positionFile = position
+            Log.e("time", "${PlayerUtils.getDurationFormat(position.toLong())}: " )
+            mChronometer?.text = PlayerUtils.getDurationFormat(position.toLong())
+//            mChronometer?.currentTime = position.toLong()
         }
 
         override fun onStateChanged(state: Int) {

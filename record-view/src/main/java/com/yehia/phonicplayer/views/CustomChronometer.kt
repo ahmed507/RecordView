@@ -8,7 +8,6 @@ import android.widget.Chronometer
 /**
  * Edit by Yehia Reda on 05/03/2022.
  */
-
 class CustomChronometer : Chronometer {
     private var timeWhenStopped: Long = 0
 
@@ -42,5 +41,4 @@ class CustomChronometer : Chronometer {
             timeWhenStopped = time
             base = SystemClock.elapsedRealtime() + timeWhenStopped
         }
-
 }
