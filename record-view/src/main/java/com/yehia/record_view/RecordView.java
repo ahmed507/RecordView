@@ -20,6 +20,7 @@ import android.os.ParcelFileDescriptor;
 import android.os.SystemClock;
 import android.provider.MediaStore;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -121,8 +122,7 @@ public class RecordView extends RelativeLayout {
         hideViews(true);
 
         if (attrs != null && defStyleAttr == -1 && defStyleRes == -1) {
-            TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.RecordView,
-                    defStyleAttr, defStyleRes);
+            TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.RecordView, defStyleAttr, defStyleRes);
 
             int slideArrowResource = typedArray.getResourceId(R.styleable.RecordView_slide_to_cancel_arrow, -1);
             String slideToCancelText = typedArray.getString(R.styleable.RecordView_slide_to_cancel_text);
@@ -139,14 +139,11 @@ public class RecordView extends RelativeLayout {
                 arrow.setImageDrawable(slideArrow);
             }
 
-            if (slideToCancelText != null)
-                slideToCancel.setText(slideToCancelText);
+            if (slideToCancelText != null) slideToCancel.setText(slideToCancelText);
 
-            if (counterTimeColor != -1)
-                setCounterTimeColor(counterTimeColor);
+            if (counterTimeColor != -1) setCounterTimeColor(counterTimeColor);
 
-            if (arrowColor != -1)
-                setSlideToCancelArrowColor(arrowColor);
+            if (arrowColor != -1) setSlideToCancelArrowColor(arrowColor);
 
             setMarginRight(slideMarginRight, true);
             typedArray.recycle();
@@ -174,8 +171,7 @@ public class RecordView extends RelativeLayout {
 
                 animationHelper.setStartRecorded(false);
 
-                if (!isSwiped)
-                    playSound(RECORD_FINISHED);
+                if (!isSwiped) playSound(RECORD_FINISHED);
 
                 if (recordButton != null) {
                     resetRecord(recordButton);
@@ -189,8 +185,7 @@ public class RecordView extends RelativeLayout {
     private void hideViews(boolean hideSmallMic) {
         slideToCancelLayout.setVisibility(GONE);
         counterTime.setVisibility(GONE);
-        if (hideSmallMic)
-            smallBlinkingMic.setVisibility(GONE);
+        if (hideSmallMic) smallBlinkingMic.setVisibility(GONE);
     }
 
     private void showViews() {
@@ -225,11 +220,11 @@ public class RecordView extends RelativeLayout {
 
     protected void onActionDown(RecordButton recordBtn, MotionEvent motionEvent) {
         boolean audio = EX.checkPermission(Manifest.permission.RECORD_AUDIO, getContext());
-        boolean readStorage =
-                EX.checkPermission(Manifest.permission.READ_EXTERNAL_STORAGE, getContext());
-        boolean writeStorage =
-                EX.checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, getContext());
-        if (!audio || !readStorage || !writeStorage) {
+        boolean readStorage = EX.checkPermission(Manifest.permission.READ_EXTERNAL_STORAGE, getContext());
+//        boolean writeStorage =
+//                EX.checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, getContext());
+        Log.i("recordview", "readstorage " + readStorage + "audio " + audio + "isRecordPermissionGranted " + isRecordPermissionGranted());
+        if (!audio) {
             onPermission();
             return;
         }
@@ -278,18 +273,12 @@ public class RecordView extends RelativeLayout {
     }
 
     public void onPermission() {
-        String[] perms = {Manifest.permission.RECORD_AUDIO,
-                Manifest.permission.READ_EXTERNAL_STORAGE,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE};
-        ActivityCompat.requestPermissions(
-                activity, perms, 100
-        );
+        String[] perms = {Manifest.permission.RECORD_AUDIO};
+        ActivityCompat.requestPermissions(activity, perms, 100);
     }
 
     private void startRecord() {
-/*
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        /* if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             ContentValues values = new ContentValues(4);
             values.put(MediaStore.Audio.Media.TITLE, fileName);
             values.put(
@@ -334,8 +323,7 @@ public class RecordView extends RelativeLayout {
             mediaRecorder.prepare();
         } catch (IOException e) {
         }
-        mediaRecorder.start();
-*/
+        mediaRecorder.start();*/
 
         recordFile = new File(context.getFilesDir(), UUID.randomUUID().toString() + "." + type);
         try {
@@ -402,17 +390,10 @@ public class RecordView extends RelativeLayout {
             } else {
                 //if statement is to Prevent Swiping out of bounds
                 if (motionEvent.getRawX() < initialX) {
-                    recordBtn.animate()
-                            .x(motionEvent.getRawX())
-                            .setDuration(0)
-                            .start();
-                    if (difX == 0)
-                        difX = (initialX - slideToCancelLayout.getX());
+                    recordBtn.animate().x(motionEvent.getRawX()).setDuration(0).start();
+                    if (difX == 0) difX = (initialX - slideToCancelLayout.getX());
 
-                    slideToCancelLayout.animate()
-                            .x(motionEvent.getRawX() - difX)
-                            .setDuration(0)
-                            .start();
+                    slideToCancelLayout.animate().x(motionEvent.getRawX() - difX).setDuration(0).start();
                 }
             }
         }
@@ -420,11 +401,11 @@ public class RecordView extends RelativeLayout {
 
     protected void onActionUp(RecordButton recordBtn) {
         boolean audio = EX.checkPermission(Manifest.permission.RECORD_AUDIO, getContext());
-        boolean readStorage =
-                EX.checkPermission(Manifest.permission.READ_EXTERNAL_STORAGE, getContext());
-        boolean writeStorage =
-                EX.checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, getContext());
-        if (!audio || !readStorage || !writeStorage) {
+        boolean readStorage = EX.checkPermission(Manifest.permission.READ_EXTERNAL_STORAGE, getContext());
+//        boolean writeStorage =
+//                EX.checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, getContext());
+
+        if (!audio) {
             return;
         }
         if (!canRecord) {
@@ -478,8 +459,7 @@ public class RecordView extends RelativeLayout {
 
             animationHelper.setStartRecorded(false);
 
-            if (!isSwiped)
-                playSound(RECORD_FINISHED);
+            if (!isSwiped) playSound(RECORD_FINISHED);
         }
 
         resetRecord(recordBtn);
@@ -506,9 +486,7 @@ public class RecordView extends RelativeLayout {
         //if user has swiped then do not hide SmallMic since it will be hidden after swipe Animation
         hideViews(!isSwiped);
 
-
-        if (!isSwiped)
-            animationHelper.clearAlphaAnimation(true);
+        if (!isSwiped) animationHelper.clearAlphaAnimation(true);
 
         animationHelper.moveRecordButtonAndSlideToCancelBack(recordBtn, slideToCancelLayout, initialX, difX);
         counterTime.stop();
@@ -537,8 +515,7 @@ public class RecordView extends RelativeLayout {
         RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) slideToCancelLayout.getLayoutParams();
         if (convertToDp) {
             layoutParams.rightMargin = (int) DpUtil.toPixel(marginRight, context);
-        } else
-            layoutParams.rightMargin = marginRight;
+        } else layoutParams.rightMargin = marginRight;
 
         slideToCancelLayout.setLayoutParams(layoutParams);
     }
@@ -556,9 +533,7 @@ public class RecordView extends RelativeLayout {
                     return true;
                 }
 
-                ActivityCompat.requestPermissions(activity,
-                        new String[]{Manifest.permission.RECORD_AUDIO},
-                        0);
+                ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.RECORD_AUDIO}, 0);
                 return false;
             }
         });
