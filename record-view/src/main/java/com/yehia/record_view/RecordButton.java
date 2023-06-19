@@ -159,25 +159,17 @@ public class RecordButton extends AppCompatImageView implements View.OnTouchList
     @Override
     public void onClick(View v) {
         boolean audio = EX.checkPermission(Manifest.permission.RECORD_AUDIO, getContext());
-        boolean readStorage =
-                EX.checkPermission(Manifest.permission.READ_EXTERNAL_STORAGE, getContext());
-        boolean writeStorage =
-                EX.checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, getContext());
-        if (!audio || !readStorage || !writeStorage) {
+//        boolean readStorage = EX.checkPermission(Manifest.permission.READ_EXTERNAL_STORAGE, getContext());
+//        boolean writeStorage = EX.checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, getContext());
+        if (!audio) {
             onPermission();
         } else {
-            if (onRecordClickListener != null)
-                onRecordClickListener.onClick(v);
+            if (onRecordClickListener != null) onRecordClickListener.onClick(v);
         }
     }
 
     public void onPermission() {
-        String[] perms = {Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.RECORD_AUDIO,
-                Manifest.permission.READ_EXTERNAL_STORAGE,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE};
-        ActivityCompat.requestPermissions(
-                (Activity) getContext(), perms, 100
-        );
+        String[] perms = {Manifest.permission.RECORD_AUDIO};
+        ActivityCompat.requestPermissions((Activity) getContext(), perms, 100);
     }
 }

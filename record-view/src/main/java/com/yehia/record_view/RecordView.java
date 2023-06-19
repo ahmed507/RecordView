@@ -430,31 +430,6 @@ public class RecordView extends RelativeLayout {
                 recordListener.onFinish(elapsedTime, false, recordFile.getPath());
             }
 
-            /* try {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        mediaPlayer.setAudioAttributes(new AudioAttributes.Builder()
-                                .setUsage(AudioAttributes.USAGE_MEDIA)
-                                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                                .setLegacyStreamType(AudioManager.STREAM_MUSIC)
-                                .build());
-                    } else {
-                        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                    }
-
-                    mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                        @Override
-                        public void onPrepared(MediaPlayer mp) {
-                            mediaPlayer.start();
-                        }
-                    });
-                    mediaPlayer.setDataSource(file);
-//                    mediaPlayer.prepare();
-
-                    mediaPlayer.prepareAsync();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }*/
-
             removeTimeLimitCallbacks();
 
             animationHelper.setStartRecorded(false);
@@ -522,20 +497,17 @@ public class RecordView extends RelativeLayout {
 
     public void setOnRecordListener(final Activity activity, OnRecordListener recrodListener) {
         this.activity = activity;
-        setRecordPermissionHandler(new RecordPermissionHandler() {
-            @Override
-            public boolean isPermissionGranted() {
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-                    return true;
-                }
-                boolean recordPermissionAvailable = ContextCompat.checkSelfPermission(activity, Manifest.permission.RECORD_AUDIO) == PERMISSION_GRANTED;
-                if (recordPermissionAvailable) {
-                    return true;
-                }
-
-                ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.RECORD_AUDIO}, 0);
-                return false;
+        setRecordPermissionHandler(() -> {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+                return true;
             }
+            boolean recordPermissionAvailable = ContextCompat.checkSelfPermission(activity, Manifest.permission.RECORD_AUDIO) == PERMISSION_GRANTED;
+            if (recordPermissionAvailable) {
+                return true;
+            }
+
+            ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.RECORD_AUDIO}, 0);
+            return false;
         });
         this.recordListener = recrodListener;
     }
