@@ -309,7 +309,7 @@ class PhonicPlayerView : RelativeLayout {
             mCircleProgressBar?.setProgress(position.toFloat())
             mSeekBar?.progress = position
             positionFile = position
-            Log.e("time", "${PlayerUtils.getDurationFormat(position.toLong())}: " )
+            Log.e("time", "${PlayerUtils.getDurationFormat(position.toLong())}: ")
             mChronometer?.text = PlayerUtils.getDurationFormat(position.toLong())
 //            mChronometer?.currentTime = position.toLong()
         }
@@ -413,10 +413,13 @@ class PhonicPlayerView : RelativeLayout {
      */
     private fun checkAndRequestPermissions(): Boolean {
         val writePermission = ContextCompat.checkSelfPermission(
-            mContext!!, Manifest.permission.WRITE_EXTERNAL_STORAGE
+            mContext!!,
+            if (Build.VERSION.SDK_INT < 33) Manifest.permission.WRITE_EXTERNAL_STORAGE else Manifest.permission.READ_MEDIA_AUDIO
         )
+
+
         val listPermissionsNeeded: MutableList<String> = ArrayList()
-        if (writePermission != PackageManager.PERMISSION_GRANTED) {
+        if (Build.VERSION.SDK_INT < 33 && writePermission != PackageManager.PERMISSION_GRANTED) {
             listPermissionsNeeded.add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
         }
         if (listPermissionsNeeded.isNotEmpty()) {

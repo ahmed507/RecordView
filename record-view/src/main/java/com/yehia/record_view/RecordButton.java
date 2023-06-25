@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
@@ -158,10 +159,11 @@ public class RecordButton extends AppCompatImageView implements View.OnTouchList
 
     @Override
     public void onClick(View v) {
+
         boolean audio = EX.checkPermission(Manifest.permission.RECORD_AUDIO, getContext());
-//        boolean readStorage = EX.checkPermission(Manifest.permission.READ_EXTERNAL_STORAGE, getContext());
-//        boolean writeStorage = EX.checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, getContext());
-        if (!audio) {
+        boolean readStorage = EX.checkPermission(Manifest.permission.READ_EXTERNAL_STORAGE, getContext());
+        boolean writeStorage = EX.checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, getContext());
+        if (!audio || (Build.VERSION.SDK_INT < 33 && (!readStorage || !writeStorage))) {
             onPermission();
         } else {
             if (onRecordClickListener != null) onRecordClickListener.onClick(v);
@@ -169,7 +171,8 @@ public class RecordButton extends AppCompatImageView implements View.OnTouchList
     }
 
     public void onPermission() {
-        String[] perms = {Manifest.permission.RECORD_AUDIO};
+
+        String[] perms = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.RECORD_AUDIO};
         ActivityCompat.requestPermissions((Activity) getContext(), perms, 100);
     }
 }

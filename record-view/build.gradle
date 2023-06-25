@@ -2,21 +2,22 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
 android {
-    compileSdkVersion rootProject.ext.compileSdkVersion
-    buildToolsVersion rootProject.ext.buildToolsVersion
 
+    compileSdk Versions.compileSdk
 
-    defaultConfig {
-        minSdkVersion rootProject.ext.minSdkVersion
-        targetSdkVersion rootProject.ext.targetSdkVersion
-//        vectorDrawables.useSupportLibrary = true
+    configurations.all {
+        resolutionStrategy { force 'androidx.core:core-ktx:1.6.0' }
     }
 
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
+    defaultConfig {
+        minSdk Versions.minsdk
+        targetSdk Versions.targetsdk
+        versionCode Versions.version_code
+        versionName Versions.version_name
+        ndkVersion '22.1.7171670'
+        multiDexEnabled true
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 }
 

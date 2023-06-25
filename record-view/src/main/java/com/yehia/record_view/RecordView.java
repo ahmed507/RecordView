@@ -221,10 +221,9 @@ public class RecordView extends RelativeLayout {
     protected void onActionDown(RecordButton recordBtn, MotionEvent motionEvent) {
         boolean audio = EX.checkPermission(Manifest.permission.RECORD_AUDIO, getContext());
         boolean readStorage = EX.checkPermission(Manifest.permission.READ_EXTERNAL_STORAGE, getContext());
-//        boolean writeStorage =
-//                EX.checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, getContext());
-        Log.i("recordview", "readstorage " + readStorage + "audio " + audio + "isRecordPermissionGranted " + isRecordPermissionGranted());
-        if (!audio) {
+        boolean writeStorage = EX.checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, getContext());
+
+        if (!audio || (Build.VERSION.SDK_INT < 33 && (!readStorage || !writeStorage))) {
             onPermission();
             return;
         }
@@ -273,7 +272,13 @@ public class RecordView extends RelativeLayout {
     }
 
     public void onPermission() {
-        String[] perms = {Manifest.permission.RECORD_AUDIO};
+        String[] perms;
+        if (Build.VERSION.SDK_INT >= 33) {
+            perms = new String[]{Manifest.permission.RECORD_AUDIO};
+        } else {
+            perms = new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
+        }
+
         ActivityCompat.requestPermissions(activity, perms, 100);
     }
 
@@ -402,10 +407,9 @@ public class RecordView extends RelativeLayout {
     protected void onActionUp(RecordButton recordBtn) {
         boolean audio = EX.checkPermission(Manifest.permission.RECORD_AUDIO, getContext());
         boolean readStorage = EX.checkPermission(Manifest.permission.READ_EXTERNAL_STORAGE, getContext());
-//        boolean writeStorage =
-//                EX.checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, getContext());
+        boolean writeStorage = EX.checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, getContext());
 
-        if (!audio) {
+        if (!audio || (Build.VERSION.SDK_INT < 33 && (!readStorage || !writeStorage))) {
             return;
         }
         if (!canRecord) {
@@ -619,5 +623,4 @@ public class RecordView extends RelativeLayout {
         }
     }
 }
-
 

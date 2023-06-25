@@ -38,6 +38,7 @@ public class AnimationHelper {
     private Handler handler1, handler2;
     private boolean recordButtonGrowingAnimationEnabled;
 
+
     public AnimationHelper(Context context, ImageView basketImg, ImageView smallBlinkingMic, boolean recordButtonGrowingAnimationEnabled) {
         this.context = context;
         this.smallBlinkingMic = smallBlinkingMic;
@@ -65,8 +66,11 @@ public class AnimationHelper {
             micX = smallBlinkingMic.getX();
             micY = smallBlinkingMic.getY();
         }
+
+
         micAnimation = (AnimatorSet) AnimatorInflaterCompat.loadAnimator(context, R.animator.delete_mic_animation);
         micAnimation.setTarget(smallBlinkingMic); // set the view you want to animate
+
 
         translateAnimation1 = new TranslateAnimation(0, 0, basketInitialY, basketInitialY - 90);
         translateAnimation1.setDuration(250);
@@ -74,16 +78,14 @@ public class AnimationHelper {
         translateAnimation2 = new TranslateAnimation(0, 0, basketInitialY - 130, basketInitialY);
         translateAnimation2.setDuration(350);
 
+
         micAnimation.start();
         basketImg.setImageDrawable(animatedVectorDrawable);
 
         handler1 = new Handler();
-        handler1.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                basketImg.setVisibility(VISIBLE);
-                basketImg.startAnimation(translateAnimation1);
-            }
+        handler1.postDelayed(() -> {
+            basketImg.setVisibility(VISIBLE);
+            basketImg.startAnimation(translateAnimation1);
         }, 350);
 
         translateAnimation1.setAnimationListener(new Animation.AnimationListener() {
@@ -93,16 +95,13 @@ public class AnimationHelper {
 
             @Override
             public void onAnimationEnd(Animation animation) {
-
+                assert animatedVectorDrawable != null;
                 animatedVectorDrawable.start();
                 handler2 = new Handler();
-                handler2.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        basketImg.startAnimation(translateAnimation2);
-                        smallBlinkingMic.setVisibility(INVISIBLE);
-                        basketImg.setVisibility(INVISIBLE);
-                    }
+                handler2.postDelayed(() -> {
+                    basketImg.startAnimation(translateAnimation2);
+                    smallBlinkingMic.setVisibility(INVISIBLE);
+                    basketImg.setVisibility(INVISIBLE);
                 }, 450);
             }
 
@@ -121,9 +120,9 @@ public class AnimationHelper {
             @Override
             public void onAnimationEnd(Animation animation) {
                 basketImg.setVisibility(INVISIBLE);
+
                 isBasketAnimating = false;
-                //if the user pressed the record button while the animation is running
-                // then do NOT call on Animation end
+
                 if (onBasketAnimationEndListener != null && !isStartRecorded) {
                     onBasketAnimationEndListener.onAnimationEnd();
                 }
@@ -179,16 +178,12 @@ public class AnimationHelper {
     }
 
     public void moveRecordButtonAndSlideToCancelBack(final RecordButton recordBtn, FrameLayout slideToCancelLayout, float initialX, float difX) {
-
         final ValueAnimator positionAnimator = ValueAnimator.ofFloat(recordBtn.getX(), initialX);
 
         positionAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
-        positionAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                float x = (Float) animation.getAnimatedValue();
-                recordBtn.setX(x);
-            }
+        positionAnimator.addUpdateListener(animation -> {
+            float x = (Float) animation.getAnimatedValue();
+            recordBtn.setX(x);
         });
 
         if (recordButtonGrowingAnimationEnabled) {
@@ -196,6 +191,7 @@ public class AnimationHelper {
         }
         positionAnimator.setDuration(0);
         positionAnimator.start();
+
         // if the move event was not called ,then the difX will still 0 and there is no need to move it back
         if (difX != 0) {
             float x = initialX - difX;
