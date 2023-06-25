@@ -3,21 +3,23 @@ apply plugin: 'kotlin-android'
 
 android {
 
-    compileSdk Versions.compileSdk
-
-    configurations.all {
-        resolutionStrategy { force 'androidx.core:core-ktx:1.6.0' }
-    }
+    compileSdkVersion 33
+    buildToolsVersion "30.0.3"
 
     defaultConfig {
-        minSdk Versions.minsdk
-        targetSdk Versions.targetsdk
-        versionCode Versions.version_code
-        versionName Versions.version_name
-        ndkVersion '22.1.7171670'
-        multiDexEnabled true
+        minSdkVersion 21
+        targetSdkVersion 33
+        versionCode 1
+        versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+
+        ndkVersion '22.1.7171670'
+        multiDexEnabled true
+    }
+    configurations.all {
+        resolutionStrategy { force 'androidx.core:core-ktx:1.6.0' }
     }
 }
 
