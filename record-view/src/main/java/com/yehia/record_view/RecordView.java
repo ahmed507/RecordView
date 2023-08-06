@@ -45,7 +45,6 @@ import io.supercharge.shimmerlayout.ShimmerLayout;
  */
 public class RecordView extends RelativeLayout {
 
-
     private Uri audiouri = null;
     String fileName = null;
     private ParcelFileDescriptor file = null;
@@ -332,7 +331,7 @@ public class RecordView extends RelativeLayout {
 
         recordFile = new File(context.getFilesDir(), UUID.randomUUID().toString() + "." + type);
         try {
-            audioRecorder.start(recordFile.getPath());
+            audioRecorder.start(recordFile.getPath(), context);
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -9,6 +9,7 @@ import com.yehia.phonicplayer.listener.OnPlaybackInfoListener
 interface PlayerAdapter {
     fun loadMedia(resourceId: PlayerTarget?)
     fun release()
+
     val isPlaying: Boolean
     fun play()
     fun reset(reload: Boolean)

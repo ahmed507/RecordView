@@ -22,7 +22,7 @@
         tools:targetApi="m">
 
         <activity
-            android:name="com.yehia.recordview.Main2Activity"
+            android:name="com.yehia.recordview.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

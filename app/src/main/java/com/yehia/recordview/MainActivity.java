@@ -15,6 +15,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.yehia.record_view.OnBasketAnimationEnd;
@@ -40,23 +41,23 @@ public class MainActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-//        recyclerView = findViewById(R.id.list_item);
-        recordButton = findViewById(R.id.record_button);
-        recordView = findViewById(R.id.record_view);
-        btnChangeOnclick = findViewById(R.id.btn_change_onclick);
-//        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-//        recyclerView.setAdapter(new ItemsAudAdapter(this));
+        recyclerView = findViewById(R.id.list_item);
+//        recordButton = findViewById(R.id.record_button);
+//        recordView = findViewById(R.id.record_view);
+//        btnChangeOnclick = findViewById(R.id.btn_change_onclick);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(new ItemsAudAdapter(this));
     }
 
     @Override
     protected void onStart() {
         super.onStart();
 
-        //IMPORTANT
-        recordButton.setRecordView(recordView);
-
-//         if you want to click the button (in case if you want to make the record button a Send Button for example..)
-        recordButton.setListenForRecord(false);
+//        //IMPORTANT
+//        recordButton.setRecordView(recordView);
+//
+////         if you want to click the button (in case if you want to make the record button a Send Button for example..)
+//        recordButton.setListenForRecord(false);
 
 //        btnChangeOnclick.setOnClickListener(new View.OnClickListener() {
 //            @Override
