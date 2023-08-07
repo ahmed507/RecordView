@@ -217,9 +217,7 @@ class PhonicPlayerView : RelativeLayout {
         })
 
         mPlayButton?.setOnClickListener {
-            mPlayButton?.visibility = View.GONE
             if (!mPlayerAdapter!!.hasTarget(mTarget)) {
-                mLoader?.visibility = View.VISIBLE
                 val handler = Handler(Looper.myLooper()!!)
                 handler.postDelayed({ // Do something after 5s = 5000ms
                     if (!mPlayerAdapter?.isPlaying!!) {
@@ -227,6 +225,8 @@ class PhonicPlayerView : RelativeLayout {
                             if (mStringName.isNotEmpty() && !isFileExist("$folderDirectory/$mStringName")) {
                                 downloadFile(mStringURL, mStringName)
                             } else {
+                                mPlayButton?.visibility = View.GONE
+                                mLoader?.visibility = View.VISIBLE
                                 if (mTarget != null) {
                                     if (!mPlayerAdapter!!.hasTarget(mTarget)) {
                                         val urlFile = when (mTarget!!.targetType) {
@@ -454,4 +454,10 @@ class PhonicPlayerView : RelativeLayout {
         return true
     }
 
+    fun stopPlaying() {
+        if (mPlayerAdapter!!.isPlaying) {
+            mPlayerAdapter!!.pause()
+            mPlayerAdapter!!.release()
+        }
+    }
 }
