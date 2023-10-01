@@ -20,7 +20,6 @@ import android.os.ParcelFileDescriptor;
 import android.os.SystemClock;
 import android.provider.MediaStore;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -490,7 +489,7 @@ public class RecordView extends RelativeLayout {
     }
 
     private void setMarginRight(int marginRight, boolean convertToDp) {
-        RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) slideToCancelLayout.getLayoutParams();
+        LayoutParams layoutParams = (LayoutParams) slideToCancelLayout.getLayoutParams();
         if (convertToDp) {
             layoutParams.rightMargin = (int) DpUtil.toPixel(marginRight, context);
         } else layoutParams.rightMargin = marginRight;

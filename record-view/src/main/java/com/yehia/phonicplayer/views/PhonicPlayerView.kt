@@ -15,10 +15,8 @@ import android.util.Log
 import android.util.SparseArray
 import android.view.View
 import android.widget.ImageView
-import android.widget.ProgressBar
 import android.widget.RelativeLayout
 import android.widget.SeekBar
-import android.widget.SeekBar.OnSeekBarChangeListener
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
@@ -26,6 +24,7 @@ import androidx.core.content.ContextCompat
 import com.downloader.OnDownloadListener
 import com.downloader.PRDownloader
 import com.downloader.PRDownloaderConfig
+import com.github.rahatarmanahmed.cpv.CircularProgressView
 import com.yehia.phonicplayer.handler.MediaPlayerHolder
 import com.yehia.phonicplayer.listener.OnPlaybackInfoListener
 import com.yehia.phonicplayer.listener.OnPlayerViewClickListener
@@ -44,33 +43,35 @@ import java.util.concurrent.TimeUnit
  * Edit by Yehia Reda on 05/03/2022.
  */
 class PhonicPlayerView : RelativeLayout {
+    private var asView: Boolean = false
 
+    private lateinit var url: String
     private var activity: Activity? = null
     private var centerDuration: TextView? = null
     private var playerRootView: View? = null
-    private var mSeekBar: SeekBar? = null
     private var mCircleProgressBar: CustomProgressBar? = null
     private var mCircleProgressBarDownload: CustomProgressBar? = null
-    private var mLoader: ProgressBar? = null
-    private var mPlayButton: ImageView? = null
     private var mErrorButton: ImageView? = null
+    private var mSeekBar: SeekBar? = null
+    private var mPlayButton: ImageView? = null
     private var mPauseButton: ImageView? = null
     private var mChronometer: CustomChronometer? = null
     private var mDuration: TextView? = null
     private var mPlayerAdapter: PlayerAdapter? = null
     private var mTarget: PlayerTarget? = null
+    private var mLoader: CircularProgressView? = null
     private var customLayout = 0
-    private var btnIcon = 0
-    private var seekSelector = 0
     private var mContext: Context? = null
     private var mStringName = ""
     private var mStringURL = ""
     private var mStringDirectory = ""
+    private var btnIcon = 0
+    private var seekSelector = 0
     private val playerViewClickListenersArray = SparseArray<OnPlayerViewClickListener>()
-    private var positionFile: Int = 0
 
     private var durationStart: Boolean = true
     private var durationEnd: Boolean = true
+    private var duration: String = "0"
 
     constructor(context: Context?) : super(context) {
         init(context)
@@ -88,6 +89,7 @@ class PhonicPlayerView : RelativeLayout {
         init(context)
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     constructor(
         context: Context, attrs: AttributeSet, defStyleAttr: Int, defStyleRes: Int
     ) : super(context, attrs, defStyleAttr, defStyleRes) {
@@ -119,14 +121,52 @@ class PhonicPlayerView : RelativeLayout {
         mTarget = PlayerTarget.Builder().withLocalFile(uri).build()
     }
 
+    fun setAudioTargetAsView(uri: String?, activity: Activity, duration: String = "") {
+        this.activity = activity
+        asView = true
+        this.url = uri ?: ""
+        if (url.isNotEmpty()) {
+            mTarget = PlayerTarget.Builder().withRemoteUrl(url).build()
+        }
+        mDuration!!.text = duration
+//        runBlocking(Dispatchers.IO) {
+//            mSeekBar?.setSampleFrom(url)
+//        }
+    }
+
+    fun setAudioTargetAsItemRecycle(uri: String?, activity: Activity, duration: String = "") {
+        this.activity = activity
+        asView = false
+        this.url = uri ?: ""
+        if (url.isNotEmpty()) {
+            mTarget = PlayerTarget.Builder().withRemoteUrl(url).build()
+        }
+
+        mDuration!!.text = duration
+    }
+
     fun setAudioTarget(resource: Int, activity: Activity) {
         this.activity = activity
         mTarget = PlayerTarget.Builder().withResource(resource).build()
     }
 
-    fun setAudioTarget(url: String, activity: Activity) {
+    fun setColor(color: Int, waveColor: Int) {
+        mPlayButton?.setColorFilter(
+            ContextCompat.getColor(context, color), android.graphics.PorterDuff.Mode.MULTIPLY
+        )
+        mPauseButton?.setColorFilter(
+            ContextCompat.getColor(context, color), android.graphics.PorterDuff.Mode.MULTIPLY
+        )
+        mDuration?.setTextColor(ContextCompat.getColor(context!!, color))
+    }
+
+    fun setAudioTarget(url: String, activity: Activity, duration: String = "") {
         this.activity = activity
-        if (url.isNotEmpty()) mTarget = PlayerTarget.Builder().withRemoteUrl(url).build()
+        if (url.isNotEmpty()) {
+            this.url = url
+            mTarget = PlayerTarget.Builder().withRemoteUrl(url).build()
+        }
+        mDuration!!.text = duration
     }
 
     fun setAudioTarget(url: String, name: String, activity: Activity) {
@@ -141,6 +181,12 @@ class PhonicPlayerView : RelativeLayout {
         }
     }
 
+    /**
+     * Registers click listener for view by id
+     *
+     * @param viewId                    view
+     * @param onPlayerViewClickListener click listener.
+     */
     fun registerViewClickListener(
         viewId: Int, onPlayerViewClickListener: OnPlayerViewClickListener
     ) {
@@ -155,6 +201,9 @@ class PhonicPlayerView : RelativeLayout {
         }
     }
 
+    /**
+     * We only load the media file whe the play button is clicked the first time
+     */
     private fun init(context: Context?) {
         val config = PRDownloaderConfig.newBuilder().setDatabaseEnabled(true).build()
         PRDownloader.initialize(context, config)
@@ -172,6 +221,7 @@ class PhonicPlayerView : RelativeLayout {
         centerDuration = findViewById(R.id.center_duration)
         mLoader = findViewById(R.id.loader_audio)
 
+//        mStringDirectory = mContext!!.getString(R.string.app_name)
         initializePlaybackController()
         mPlayButton?.setColorFilter(
             ContextCompat.getColor(mContext!!, btnIcon), android.graphics.PorterDuff.Mode.MULTIPLY
@@ -179,8 +229,7 @@ class PhonicPlayerView : RelativeLayout {
         mPauseButton?.setColorFilter(
             ContextCompat.getColor(mContext!!, btnIcon), android.graphics.PorterDuff.Mode.MULTIPLY
         )
-
-        mSeekBar?.progressDrawable = ContextCompat.getDrawable(mContext!!, seekSelector)
+//        setColor(btnIcon, R.color.colorPrimary)
 
         if (!durationStart) {
             mChronometer!!.visibility = GONE
@@ -198,35 +247,18 @@ class PhonicPlayerView : RelativeLayout {
                 mPauseButton?.visibility = View.GONE
             }
         }
-
-        mSeekBar?.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
-            override fun onProgressChanged(p0: SeekBar?, p1: Int, p2: Boolean) {
-                if (mPlayerAdapter != null && mPlayerAdapter?.isPlaying == true) {
-                    if (mSeekBar?.progress != positionFile) {
-                        mPlayerAdapter?.seekTo(mSeekBar?.progress ?: 0)
-                    }
-                }
-            }
-
-            override fun onStartTrackingTouch(p0: SeekBar?) {
-            }
-
-            override fun onStopTrackingTouch(p0: SeekBar?) {
-
-            }
-        })
-
         mPlayButton?.setOnClickListener {
-            if (!mPlayerAdapter!!.hasTarget(mTarget)) {
-                val handler = Handler(Looper.myLooper()!!)
-                handler.postDelayed({ // Do something after 5s = 5000ms
-                    if (!mPlayerAdapter?.isPlaying!!) {
-                        if (checkAndRequestPermissions()) {
+            if (checkAndRequestPermissions()) {
+                mPlayButton?.visibility = View.GONE
+                if (!mPlayerAdapter!!.hasTarget(mTarget)) {
+                    mLoader?.visibility = View.VISIBLE
+                    mLoader?.startAnimation()
+                    val handler = Handler(Looper.myLooper()!!)
+                    handler.postDelayed({ // Do something after 5s = 5000ms
+                        if (!mPlayerAdapter?.isPlaying!!) {
                             if (mStringName.isNotEmpty() && !isFileExist("$folderDirectory/$mStringName")) {
                                 downloadFile(mStringURL, mStringName)
                             } else {
-                                mPlayButton?.visibility = View.GONE
-                                mLoader?.visibility = View.VISIBLE
                                 if (mTarget != null) {
                                     if (!mPlayerAdapter!!.hasTarget(mTarget)) {
                                         val urlFile = when (mTarget!!.targetType) {
@@ -254,15 +286,16 @@ class PhonicPlayerView : RelativeLayout {
                                         mPlayerAdapter!!.reset(false)
                                         initializePlaybackController()
                                         mPlayerAdapter!!.loadMedia(mTarget)
+
                                     }
                                     mPlayerAdapter!!.play()
                                 }
                             }
                         }
-                    }
-                }, 2000)
-            } else {
-                mPlayerAdapter!!.play()
+                    }, 2000)
+                } else {
+                    mPlayerAdapter!!.play()
+                }
             }
         }
     }
@@ -285,7 +318,6 @@ class PhonicPlayerView : RelativeLayout {
         mStringDirectory = directoryName
     }
 
-    @RequiresApi(Build.VERSION_CODES.GINGERBREAD_MR1)
     fun setTotalDurationFromPath(path: String?) {
         val mediaMetadataRetriever = MediaMetadataRetriever()
         mediaMetadataRetriever.setDataSource(mContext, Uri.parse(path))
@@ -316,8 +348,8 @@ class PhonicPlayerView : RelativeLayout {
 
     inner class OnPlaybackListener : OnPlaybackInfoListener() {
         override fun onDurationChanged(duration: Int) {
-            mLoader?.visibility = View.GONE
-            mPauseButton?.visibility = VISIBLE
+//            mLoader?.visibility = View.GONE
+//            mPauseButton?.visibility = VISIBLE
             mCircleProgressBar?.setMax(duration)
             mSeekBar?.max = duration
             if (mDuration != null) mDuration!!.text =
@@ -325,14 +357,8 @@ class PhonicPlayerView : RelativeLayout {
         }
 
         override fun onPositionChanged(position: Int) {
-            mLoader?.visibility = View.GONE
-            mPauseButton?.visibility = VISIBLE
             mCircleProgressBar?.setProgress(position.toFloat())
             mSeekBar?.progress = position
-            positionFile = position
-            Log.e("time", "${PlayerUtils.getDurationFormat(position.toLong())}: ")
-            mChronometer?.text = PlayerUtils.getDurationFormat(position.toLong())
-//            mChronometer?.currentTime = position.toLong()
         }
 
         override fun onStateChanged(state: Int) {
@@ -345,6 +371,10 @@ class PhonicPlayerView : RelativeLayout {
                 mPauseButton!!.visibility = View.GONE
                 if (mChronometer != null) mChronometer!!.reset()
             } else if (state == State.PLAYING) {
+                mLoader?.stopAnimation()
+                mPlayButton!!.visibility = View.GONE
+                mLoader?.visibility = View.GONE
+                mPauseButton?.visibility = VISIBLE
                 if (mChronometer != null) mChronometer!!.start()
             } else if (state == State.PAUSED) {
                 if (mChronometer != null) mChronometer!!.stop()
@@ -434,13 +464,10 @@ class PhonicPlayerView : RelativeLayout {
      */
     private fun checkAndRequestPermissions(): Boolean {
         val writePermission = ContextCompat.checkSelfPermission(
-            mContext!!,
-            if (Build.VERSION.SDK_INT < 33) Manifest.permission.WRITE_EXTERNAL_STORAGE else Manifest.permission.READ_MEDIA_AUDIO
+            mContext!!, Manifest.permission.WRITE_EXTERNAL_STORAGE
         )
-
-
         val listPermissionsNeeded: MutableList<String> = ArrayList()
-        if (Build.VERSION.SDK_INT < 33 && writePermission != PackageManager.PERMISSION_GRANTED) {
+        if (writePermission != PackageManager.PERMISSION_GRANTED) {
             listPermissionsNeeded.add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
         }
         if (listPermissionsNeeded.isNotEmpty()) {
