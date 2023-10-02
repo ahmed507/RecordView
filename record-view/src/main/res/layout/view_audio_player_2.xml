@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    xmlns:tools="http://schemas.android.com/tools"
     android:gravity="center_vertical"
     android:orientation="horizontal"
     android:paddingHorizontal="@dimen/_2sdp"
@@ -15,7 +15,6 @@
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_centerVertical="true">
-
 
         <com.yehia.phonicplayer.views.CustomProgressBar
             android:id="@+id/progressBar"
@@ -45,8 +44,7 @@
             android:background="@android:color/transparent"
             android:contentDescription="@string/app_name"
             android:src="@drawable/icon_recording_stop"
-            android:visibility="gone"
-            app:tint="@color/colorPrimary" />
+            android:visibility="gone" />
 
         <ImageView
             android:id="@+id/button_error"
@@ -65,16 +63,13 @@
             android:layout_centerInParent="true"
             android:background="@android:color/transparent"
             android:contentDescription="@string/app_name"
-            android:src="@drawable/icon_play_audio"
-            app:tint="@color/colorPrimary" />
+            android:src="@drawable/icon_play_audio" />
 
-        <com.github.rahatarmanahmed.cpv.CircularProgressView
+        <ProgressBar
             android:id="@+id/loader_audio"
             android:layout_width="@dimen/_16sdp"
             android:layout_height="@dimen/_16sdp"
-            android:visibility="gone"
-            app:cpv_animAutostart="false"
-            app:cpv_indeterminate="true" />
+            android:visibility="gone" />
 
     </RelativeLayout>
 
