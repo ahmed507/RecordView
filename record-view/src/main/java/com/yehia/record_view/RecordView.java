@@ -12,15 +12,12 @@ import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
-import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
-import android.os.ParcelFileDescriptor;
 import android.os.SystemClock;
 import android.provider.MediaStore;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,10 +42,6 @@ import io.supercharge.shimmerlayout.ShimmerLayout;
  */
 public class RecordView extends RelativeLayout {
 
-
-    private Uri audiouri = null;
-    String fileName = null;
-    private ParcelFileDescriptor file = null;
     public static final int DEFAULT_CANCEL_BOUNDS = 8; //8dp
     private ImageView smallBlinkingMic, basketImg;
     private Chronometer counterTime;
@@ -74,7 +67,6 @@ public class RecordView extends RelativeLayout {
     private Runnable runnable;
     private Handler handler;
     private RecordButton recordButton;
-    private MediaRecorder mediaRecorder;
 
     private boolean canRecord = true;
     private String recordPath = "";
@@ -145,7 +137,7 @@ public class RecordView extends RelativeLayout {
 
             if (arrowColor != -1) setSlideToCancelArrowColor(arrowColor);
 
-            setMarginRight(slideMarginRight, true);
+            setMarginRight(slideMarginRight);
             typedArray.recycle();
         }
 
@@ -180,7 +172,6 @@ public class RecordView extends RelativeLayout {
             }
         };
     }
-
 
     private void hideViews(boolean hideSmallMic) {
         slideToCancelLayout.setVisibility(GONE);
@@ -283,56 +274,9 @@ public class RecordView extends RelativeLayout {
     }
 
     private void startRecord() {
-        /* if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            ContentValues values = new ContentValues(4);
-            values.put(MediaStore.Audio.Media.TITLE, fileName);
-            values.put(
-                    MediaStore.Audio.Media.DATE_ADDED,
-                    (System.currentTimeMillis() / 1000)
-            );
-            values.put(MediaStore.Audio.Media.MIME_TYPE, "audio/" + type);
-            values.put(MediaStore.Audio.Media.RELATIVE_PATH, "Music/Recordings/");
-
-            audiouri = context.getContentResolver().insert(
-                    MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                    values
-            );
-            try {
-                file = context.getContentResolver().openFileDescriptor(audiouri, "w");
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-        } else {
-            recordPath =
-                    context.getExternalFilesDir(Environment.DIRECTORY_MUSIC).getAbsolutePath()
-                            + "/${UUID.randomUUID()}.$type";
-        }
-
-        mediaRecorder = new MediaRecorder();
-
-        mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-        mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
-        mediaRecorder.setAudioSamplingRate(16000);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
-            mediaRecorder.setOutputFile(file.getFileDescriptor());
-        else {
-            try {
-                mediaRecorder.setOutputFile(recordPath);
-            } catch (Exception e) {
-            }
-        }
-        mediaRecorder.setAudioChannels(1);
-        try {
-            mediaRecorder.prepare();
-        } catch (IOException e) {
-        }
-        mediaRecorder.start();*/
-
         recordFile = new File(context.getFilesDir(), UUID.randomUUID().toString() + "." + type);
         try {
-            audioRecorder.start(recordFile.getPath());
+            audioRecorder.start(recordFile.getPath(), context);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -359,7 +303,6 @@ public class RecordView extends RelativeLayout {
         long time = System.currentTimeMillis() - startTime;
 
         if (!isSwiped) {
-
             //Swipe To Cancel
             if (slideToCancelLayout.getX() != 0 && slideToCancelLayout.getX() <= counterTime.getRight() + cancelBounds) {
 
@@ -490,11 +433,9 @@ public class RecordView extends RelativeLayout {
         return canRecord;
     }
 
-    private void setMarginRight(int marginRight, boolean convertToDp) {
+    private void setMarginRight(int marginRight) {
         RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) slideToCancelLayout.getLayoutParams();
-        if (convertToDp) {
-            layoutParams.rightMargin = (int) DpUtil.toPixel(marginRight, context);
-        } else layoutParams.rightMargin = marginRight;
+        layoutParams.rightMargin = (int) DpUtil.toPixel(marginRight, context);
 
         slideToCancelLayout.setLayoutParams(layoutParams);
     }
@@ -549,7 +490,7 @@ public class RecordView extends RelativeLayout {
     }
 
     public void setSlideMarginRight(int marginRight) {
-        setMarginRight(marginRight, true);
+        setMarginRight(marginRight);
     }
 
     public void setCustomSounds(int startSound, int finishedSound, int errorSound) {

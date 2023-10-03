@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        recyclerView = findViewById(R.id.list_item);
+//        recyclerView = findViewById(R.id.list_item);
 //        recordButton = findViewById(R.id.record_button);
 //        recordView = findViewById(R.id.record_view);
 //        btnChangeOnclick = findViewById(R.id.btn_change_onclick);

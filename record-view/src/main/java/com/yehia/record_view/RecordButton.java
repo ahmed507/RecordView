@@ -159,7 +159,6 @@ public class RecordButton extends AppCompatImageView implements View.OnTouchList
 
     @Override
     public void onClick(View v) {
-
         boolean audio = EX.checkPermission(Manifest.permission.RECORD_AUDIO, getContext());
         boolean readStorage = EX.checkPermission(Manifest.permission.READ_EXTERNAL_STORAGE, getContext());
         boolean writeStorage = EX.checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, getContext());

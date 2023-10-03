@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.yehia.record_view.OnRecordListener
 import com.yehia.record_view.RecordButton
@@ -20,11 +21,18 @@ class Main2Activity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        //        recyclerView = findViewById(R.id.list_item);
-//        recordButton = findViewById(R.id.record_button)
-//        recordView = findViewById(R.id.record_view)
-//        btnChangeOnclick = findViewById(R.id.btn_change_onclick)
+        recyclerView = findViewById(R.id.list_item);
+        recordButton = findViewById(R.id.record_button)
+        recordView = findViewById(R.id.record_view)
+        btnChangeOnclick = findViewById(R.id.btn_change_onclick)
 
+        //        recyclerView = findViewById(R.id.list_item);
+//        recordButton = findViewById(R.id.record_button);
+//        recordView = findViewById(R.id.record_view);
+//        btnChangeOnclick = findViewById(R.id.btn_change_onclick);
+        recyclerView!!.layoutManager = LinearLayoutManager(this)
+        val itemsAudAdapter = ItemsAudAdapter(this)
+        recyclerView!!.adapter = itemsAudAdapter
 
         recordButton?.setRecordView(recordView)
 
@@ -37,6 +45,8 @@ class Main2Activity : AppCompatActivity() {
 
                     file?.takeIf { it.isNotEmpty() }?.let {
                         Log.d(TAG, "onFinish: $it")
+                        itemsAudAdapter.list.add(it)
+                        itemsAudAdapter.notifyDataSetChanged()
                     }
                 }
 

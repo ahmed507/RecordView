@@ -10,6 +10,8 @@ public class ItemsAudAdapter(
     private val activity: Activity,
 ) : RecyclerView.Adapter<ItemsAudAdapter.ViewHolder>() {
 
+    val list: MutableList<String> = ArrayList()
+
     override fun getItemViewType(position: Int): Int {
         return position
     }
@@ -21,13 +23,12 @@ public class ItemsAudAdapter(
     }
 
     override fun getItemCount(): Int {
-        return 50
+        return list.size
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.binding.recordPlays.setAudioTarget(
-            "https://www.eroshen.com/up2/uploads/1445668835931.mp3?fbclid=IwAR1G3L02lfn2HBf__WcNAIXaqxwqcXPw7aUdzHPRFSwZzU7nRmPOjTNHwHQ",
-            activity
+            list[position], activity
         )
     }
 
