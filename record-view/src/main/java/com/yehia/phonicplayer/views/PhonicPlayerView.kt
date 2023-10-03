@@ -33,8 +33,6 @@ import com.yehia.phonicplayer.utils.PlayerAdapter
 import com.yehia.phonicplayer.utils.PlayerTarget
 import com.yehia.phonicplayer.utils.PlayerUtils
 import com.yehia.record_view.R
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
 import java.io.File
 import java.net.HttpURLConnection
 import java.net.URL
@@ -217,53 +215,46 @@ class PhonicPlayerView : RelativeLayout {
         })
 
         mPlayButton?.setOnClickListener {
-            if (!mPlayerAdapter!!.hasTarget(mTarget)) {
-                if (!mPlayerAdapter?.isPlaying!!) {
-                    mPlayButton?.visibility = View.GONE
-                    mLoader?.visibility = View.VISIBLE
-                    val handler = Handler(Looper.myLooper()!!)
-                    handler.postDelayed({ // Do something after 5s = 5000ms
-                        if (checkAndRequestPermissions()) {
-                            if (mStringName.isNotEmpty() && !isFileExist("$folderDirectory/$mStringName")) {
-                                downloadFile(mStringURL, mStringName)
-                            } else {
-                                if (mTarget != null) {
-                                    if (!mPlayerAdapter!!.hasTarget(mTarget)) {
-                                        val urlFile = when (mTarget!!.targetType) {
-                                            PlayerTarget.Type.RESOURCE -> {
-                                                (mTarget!!.resource).toString()
-                                            }
+            if (checkAndRequestPermissions()) {
+                if (mStringName.isNotEmpty() && !isFileExist("$folderDirectory/$mStringName")) {
+                    downloadFile(mStringURL, mStringName)
+                } else {
 
-                                            PlayerTarget.Type.REMOTE_FILE_URL -> {
-                                                (mTarget!!.remoteUrl).toString()
-                                            }
+                    if (mTarget != null) {
+                        if (!mPlayerAdapter!!.hasTarget(mTarget)) {
+                            when (mTarget!!.targetType) {
+                                PlayerTarget.Type.RESOURCE -> {
+                                    (mTarget!!.resource).toString()
+                                }
 
-                                            PlayerTarget.Type.LOCAL_FILE_URI -> {
-                                                Log.e(
-                                                    "MEDIAPLAY_HOLDER_TAG", "Type is LOCAL_FILE_URI"
-                                                )
-                                                val audioFile = File(mTarget!!.fileUri.toString())
-                                                if (audioFile.exists()) {
-                                                    (mTarget!!.fileUri.toString())
-                                                } else ""
-                                            }
+                                PlayerTarget.Type.REMOTE_FILE_URL -> {
+                                    (mTarget!!.remoteUrl).toString()
+                                }
 
-                                            else -> ""
-                                        }
-
-                                        mPlayerAdapter!!.reset(false)
-                                        initializePlaybackController()
-                                        mPlayerAdapter!!.loadMedia(mTarget)
+                                PlayerTarget.Type.LOCAL_FILE_URI -> {
+                                    Log.e("MEDIAPLAY_HOLDER_TAG", "Type is LOCAL_FILE_URI")
+                                    val audioFile = File(mTarget!!.fileUri.toString())
+                                    if (audioFile.exists()) {
+                                        (mTarget!!.fileUri.toString())
                                     }
-                                    mPlayerAdapter!!.play()
                                 }
                             }
-                        }
-                    }, 2000)
-                }
 
-            } else {
-                mPlayerAdapter!!.play()
+                            mPlayerAdapter!!.reset(false)
+                        }
+
+                        Handler(Looper.getMainLooper()).postDelayed({
+                            // Your Code
+                            if (mTarget != null) {
+                                initializePlaybackController()
+                                mPlayerAdapter!!.loadMedia(mTarget)
+                            }
+                            mPlayerAdapter!!.play()
+                        }, 500)
+                        mPlayButton?.visibility = View.GONE
+                        mLoader?.visibility = View.VISIBLE
+                    }
+                }
             }
         }
     }
@@ -303,6 +294,7 @@ class PhonicPlayerView : RelativeLayout {
 
     fun reset() {
         mPlayButton!!.visibility = View.VISIBLE
+        mLoader?.visibility = View.GONE
         mPauseButton!!.visibility = View.GONE
         if (mChronometer != null) mChronometer!!.reset()
     }
@@ -317,8 +309,6 @@ class PhonicPlayerView : RelativeLayout {
 
     inner class OnPlaybackListener : OnPlaybackInfoListener() {
         override fun onDurationChanged(duration: Int) {
-            mLoader?.visibility = View.GONE
-            mPauseButton?.visibility = VISIBLE
             mCircleProgressBar?.setMax(duration)
             mSeekBar?.max = duration
             if (mDuration != null) mDuration!!.text =
@@ -326,8 +316,6 @@ class PhonicPlayerView : RelativeLayout {
         }
 
         override fun onPositionChanged(position: Int) {
-            mLoader?.visibility = View.GONE
-            mPauseButton?.visibility = VISIBLE
             mCircleProgressBar?.setProgress(position.toFloat())
             mSeekBar?.progress = position
             positionFile = position
@@ -346,6 +334,8 @@ class PhonicPlayerView : RelativeLayout {
                 mPauseButton!!.visibility = View.GONE
                 if (mChronometer != null) mChronometer!!.reset()
             } else if (state == State.PLAYING) {
+                mLoader?.visibility = View.GONE
+                mPauseButton?.visibility = View.VISIBLE
                 if (mChronometer != null) mChronometer!!.start()
             } else if (state == State.PAUSED) {
                 if (mChronometer != null) mChronometer!!.stop()
@@ -354,6 +344,7 @@ class PhonicPlayerView : RelativeLayout {
 
                 mPlayButton?.visibility = View.GONE
                 mPauseButton?.visibility = View.GONE
+                mLoader?.visibility = View.GONE
                 mErrorButton?.visibility = View.VISIBLE
             }
         }
@@ -455,10 +446,4 @@ class PhonicPlayerView : RelativeLayout {
         return true
     }
 
-    fun stopPlaying() {
-        if (mPlayerAdapter!!.isPlaying) {
-            mPlayerAdapter!!.pause()
-            mPlayerAdapter!!.release()
-        }
-    }
 }

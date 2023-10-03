@@ -8,42 +8,35 @@ import android.util.Log
 import com.yehia.phonicplayer.listener.OnPlaybackInfoListener
 import com.yehia.phonicplayer.utils.PlayerAdapter
 import com.yehia.phonicplayer.utils.PlayerTarget
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 import java.io.File
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
-import kotlin.coroutines.CoroutineContext
 
 /**
  * Edit by Yehia Reda on 05/03/2022.
  */
 
-class MediaPlayerHolder(context: Context) : PlayerAdapter, MediaActionHandler, CoroutineScope {
+class MediaPlayerHolders(context: Context) : PlayerAdapter, MediaActionHandler {
+
     private val mContext: Context = context
     private var mMediaPlayer: MediaPlayer? = null
     private var mOnPlaybackInfoListener: OnPlaybackInfoListener? = null
     private var mExecutor: ScheduledExecutorService? = null
     private var mSeekbarPositionUpdateTask: Runnable? = null
     private var mTarget: PlayerTarget? = null
-    private var job = Job()
-
-    override val coroutineContext: CoroutineContext = Dispatchers.Main + job
 
     private fun initializeMediaPlayer() {
         if (mMediaPlayer == null) {
             mMediaPlayer = MediaPlayer()
             mMediaPlayer!!.setAudioStreamType(AudioManager.STREAM_MUSIC)
             mMediaPlayer!!.setOnCompletionListener {
+                mOnPlaybackInfoListener!!.onPositionChanged(0)
                 stopUpdatingCallbackWithPosition(true)
                 logToUI("MediaPlayer playback completed")
                 if (mOnPlaybackInfoListener != null) {
                     mOnPlaybackInfoListener!!.onStateChanged(OnPlaybackInfoListener.State.COMPLETED)
                     mOnPlaybackInfoListener!!.onPlaybackCompleted()
-                    job.cancel()
                 }
             }
             logToUI("mMediaPlayer = new MediaPlayer()")
@@ -71,8 +64,7 @@ class MediaPlayerHolder(context: Context) : PlayerAdapter, MediaActionHandler, C
             when (target!!.targetType) {
                 PlayerTarget.Type.RESOURCE -> {
                     Log.e("MEDIAPLAY_HOLDER_TAG", "Type is RESOURCE")
-                    val assetFileDescriptor =
-                        mContext.resources.openRawResourceFd(target.resource)
+                    val assetFileDescriptor = mContext.resources.openRawResourceFd(target.resource)
                 }
 
                 PlayerTarget.Type.REMOTE_FILE_URL -> {
@@ -108,7 +100,6 @@ class MediaPlayerHolder(context: Context) : PlayerAdapter, MediaActionHandler, C
             mMediaPlayer!!.release()
             mMediaPlayer = null
             removeTarget()
-            job.cancel()
         }
     }
 
@@ -160,19 +151,16 @@ class MediaPlayerHolder(context: Context) : PlayerAdapter, MediaActionHandler, C
      * Syncs the mMediaPlayer position with mPlaybackProgressCallback via recurring task.
      */
     private fun startUpdatingCallbackWithPosition() {
-
         if (mExecutor == null) {
             mExecutor = Executors.newSingleThreadScheduledExecutor()
         }
-
         if (mSeekbarPositionUpdateTask == null) {
-                mSeekbarPositionUpdateTask = Runnable {
-                    try {
-                        updateProgressCallbackTask()
-
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                    }
+            mSeekbarPositionUpdateTask = Runnable {
+                try {
+                    updateProgressCallbackTask()
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
             }
         }
         mExecutor!!.scheduleAtFixedRate(
@@ -196,23 +184,19 @@ class MediaPlayerHolder(context: Context) : PlayerAdapter, MediaActionHandler, C
     }
 
     private fun updateProgressCallbackTask() {
-        CoroutineScope(coroutineContext).launch {
-            if (mMediaPlayer != null && mMediaPlayer!!.isPlaying) {
-                val currentPosition = mMediaPlayer!!.currentPosition
-                if (mOnPlaybackInfoListener != null) {
-                    mOnPlaybackInfoListener!!.onPositionChanged(currentPosition)
-                }
+        if (mMediaPlayer != null && mMediaPlayer!!.isPlaying) {
+            val currentPosition = mMediaPlayer!!.currentPosition
+            if (mOnPlaybackInfoListener != null) {
+                mOnPlaybackInfoListener!!.onPositionChanged(currentPosition)
             }
         }
     }
 
     override fun initializeProgressCallback() {
-        job = Job()
         val duration = mMediaPlayer!!.duration
         if (mOnPlaybackInfoListener != null) {
             mOnPlaybackInfoListener!!.onDurationChanged(duration)
             mOnPlaybackInfoListener!!.onPositionChanged(0)
-
         }
     }
 
@@ -243,4 +227,5 @@ class MediaPlayerHolder(context: Context) : PlayerAdapter, MediaActionHandler, C
             return mInstance
         }
     }
+
 }

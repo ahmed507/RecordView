@@ -45,6 +45,7 @@ import io.supercharge.shimmerlayout.ShimmerLayout;
  */
 public class RecordView extends RelativeLayout {
 
+
     private Uri audiouri = null;
     String fileName = null;
     private ParcelFileDescriptor file = null;
@@ -331,7 +332,7 @@ public class RecordView extends RelativeLayout {
 
         recordFile = new File(context.getFilesDir(), UUID.randomUUID().toString() + "." + type);
         try {
-            audioRecorder.start(recordFile.getPath(), context);
+            audioRecorder.start(recordFile.getPath());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -490,7 +491,7 @@ public class RecordView extends RelativeLayout {
     }
 
     private void setMarginRight(int marginRight, boolean convertToDp) {
-        LayoutParams layoutParams = (LayoutParams) slideToCancelLayout.getLayoutParams();
+        RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) slideToCancelLayout.getLayoutParams();
         if (convertToDp) {
             layoutParams.rightMargin = (int) DpUtil.toPixel(marginRight, context);
         } else layoutParams.rightMargin = marginRight;

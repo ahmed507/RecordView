@@ -30,8 +30,8 @@
 
         <ImageView
             android:id="@+id/button_pause"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="@dimen/_44sdp"
+            android:layout_height="@dimen/_44sdp"
             android:layout_centerInParent="true"
             android:background="@android:color/transparent"
             android:contentDescription="@string/app_name"
@@ -40,12 +40,19 @@
 
         <ImageView
             android:id="@+id/button_play"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="@dimen/_44sdp"
+            android:layout_height="@dimen/_44sdp"
             android:layout_centerInParent="true"
             android:background="@android:color/transparent"
             android:contentDescription="@string/app_name"
             android:src="@drawable/icon_play_audio" />
+
+        <ProgressBar
+            android:id="@+id/loader_audio"
+            android:layout_width="@dimen/_44sdp"
+            android:layout_height="@dimen/_44sdp"
+            android:layout_centerInParent="true"
+            android:visibility="gone" />
 
     </RelativeLayout>
 
